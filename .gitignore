@@ -3,3 +3,4 @@ bin/
 .pnpm-store/
 web/dist/
 web/node_modules/
+.idea/
