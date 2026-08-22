@@ -1,0 +1,5 @@
+bin/
+*.db
+.pnpm-store/
+web/dist/
+web/node_modules/

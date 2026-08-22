@@ -1,0 +1,17 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - revive
+    - staticcheck
+  settings:
+    errcheck:
+      # (*sql.Rows).Close returns an error that is unactionable and redundant: it is also
+      # reported by rows.Err(), which every query loop already checks. Every other Close -
+      # the database handle included - stays checked.
+      exclude-functions:
+        - (*database/sql.Rows).Close
