@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -23,6 +24,10 @@ type tasksResponse struct {
 	Tasks []store.Task `json:"tasks"`
 }
 
+type projectsResponse struct {
+	Projects []store.Project `json:"projects"`
+}
+
 type logsResponse struct {
 	Entries    []store.LogEntry `json:"entries"`
 	NextCursor *string          `json:"next_cursor"`
@@ -37,13 +42,29 @@ type logSummaryResponse struct {
 }
 
 type dashboardResponse struct {
-	Today      string                `json:"today"`
-	Week       PlanWeek              `json:"week"`
+	Today string   `json:"today"`
+	Week  PlanWeek `json:"week"`
+	// TaskWeek is the week the task list below actually came from. It differs from Week before
+	// the plan starts and after it ends, when there is no active week but the screen still
+	// shows the first or last week's tasks. Clients that need a week to write to - the add-task
+	// sheet - must use this, not Week.Code, or they are dead outside the plan window.
+	//
+	// It carries the dates and focus too, so a client can say *when* an upcoming week starts
+	// without a second request.
+	TaskWeek   *dashboardTaskWeek    `json:"task_week"`
 	Rhythm     dashboardRhythm       `json:"rhythm"`
 	Tasks      []store.Task          `json:"tasks"`
 	Completion taskCompletion        `json:"completion"`
 	Counters   []store.CategoryCount `json:"counters"`
 	Streak     Streak                `json:"streak"`
+}
+
+// dashboardTaskWeek describes the week whose tasks are on screen, in any plan state.
+type dashboardTaskWeek struct {
+	Code      string  `json:"code"`
+	StartDate string  `json:"start_date"`
+	EndDate   string  `json:"end_date"`
+	Focus     *string `json:"focus"`
 }
 
 type dashboardRhythm struct {
@@ -63,48 +84,52 @@ func (s *Server) dashboard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	projects := splitCSV(r.URL.Query().Get("project"))
-	if err := validateAllProjects(projects); err != nil {
+	if err := s.validateProjects(r.Context(), projects); err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	today := localDate(s.now(), s.location)
-	plan := PlanWeekFor(s.now(), s.location)
+	weeks, err := s.store.ListWeeks(r.Context())
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+	plan := PlanWeekFor(s.now(), s.location, weeks)
 
 	taskWeek := ""
 	if plan.Code != nil {
-		week, err := s.store.GetWeek(r.Context(), *plan.Code)
-		if err != nil {
-			s.handleStoreError(w, err)
-			return
-		}
-		enrichPlanWeek(&plan, week)
 		taskWeek = *plan.Code
 	} else if plan.State == "plan_complete" {
-		taskWeek = lastPlanWeekCode()
+		taskWeek = lastPlanWeekCode(weeks)
 	} else {
-		taskWeek = firstPlanWeekCode()
+		taskWeek = firstPlanWeekCode(weeks)
 	}
 
 	rhythm, err := s.store.RhythmForWeekday(r.Context(), isoWeekday(today))
 	if err != nil {
-		s.handleStoreError(w, err)
-		return
+		if !errors.Is(err, store.ErrNotFound) {
+			s.handleStoreError(w, err)
+			return
+		}
 	}
 
-	tasks, err := s.store.ListTasks(r.Context(), store.TaskFilter{Week: taskWeek, Projects: projects})
-	if err != nil {
-		s.handleStoreError(w, err)
-		return
+	var tasks []store.Task
+	var done, total int
+	if taskWeek != "" {
+		tasks, err = s.store.ListTasks(r.Context(), store.TaskFilter{Week: taskWeek, Projects: projects})
+		if err != nil {
+			s.handleStoreError(w, err)
+			return
+		}
+		done, total, err = s.store.CountTasksByWeek(r.Context(), taskWeek)
+		if err != nil {
+			s.handleStoreError(w, err)
+			return
+		}
 	}
 	if tasks == nil {
 		tasks = []store.Task{}
-	}
-
-	done, total, err := s.store.CountTasksByWeek(r.Context(), taskWeek)
-	if err != nil {
-		s.handleStoreError(w, err)
-		return
 	}
 
 	fromDate, toDate := currentWeekDateBounds(s.now(), s.location)
@@ -139,9 +164,23 @@ func (s *Server) dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var taskWeekOut *dashboardTaskWeek
+	for _, week := range weeks {
+		if week.Code == taskWeek {
+			taskWeekOut = &dashboardTaskWeek{
+				Code:      week.Code,
+				StartDate: week.StartDate,
+				EndDate:   week.EndDate,
+				Focus:     week.Focus,
+			}
+			break
+		}
+	}
+
 	s.writeJSON(w, http.StatusOK, dashboardResponse{
-		Today: today.Format(dateLayout),
-		Week:  plan,
+		Today:    today.Format(dateLayout),
+		Week:     plan,
+		TaskWeek: taskWeekOut,
 		Rhythm: dashboardRhythm{
 			Label: rhythm.Label,
 			Slot:  rhythm.Slot,
@@ -168,7 +207,7 @@ func (s *Server) listGoals(w http.ResponseWriter, r *http.Request) {
 	}
 
 	projects := splitCSV(r.URL.Query().Get("project"))
-	if err := validateAllProjects(projects); err != nil {
+	if err := s.validateProjects(r.Context(), projects); err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -188,7 +227,17 @@ func (s *Server) listGoals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.writeJSON(w, http.StatusOK, goalsResponse{Goals: goals, ActiveCount: activeCount, ActiveLimit: 3})
+	config, err := s.store.PlanConfig(r.Context())
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+
+	s.writeJSON(w, http.StatusOK, goalsResponse{
+		Goals:       goals,
+		ActiveCount: activeCount,
+		ActiveLimit: config.ActiveGoalLimit,
+	})
 }
 
 func (s *Server) createGoal(w http.ResponseWriter, r *http.Request) {
@@ -215,7 +264,7 @@ func (s *Server) createGoal(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := validateOneOf(in.Project, "project", allowedProjects); err != nil {
+	if err := s.validateProjectID(r.Context(), in.Project); err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -230,7 +279,7 @@ func (s *Server) createGoal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if in.Phase != nil {
-		if err := validateOneOf(*in.Phase, "phase", allowedPhases); err != nil {
+		if err := s.validatePhaseID(r.Context(), *in.Phase); err != nil {
 			s.writeError(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -320,7 +369,7 @@ func (s *Server) patchGoal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if in.Project != nil {
-		if err := validateOneOf(*in.Project, "project", allowedProjects); err != nil {
+		if err := s.validateProjectID(r.Context(), *in.Project); err != nil {
 			s.writeError(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -361,11 +410,16 @@ func (s *Server) patchGoal(w http.ResponseWriter, r *http.Request) {
 		reordered = []store.Goal{}
 	}
 
-	w.Header().Set("ETag", etag(goal.ID, goal.Version))
-	s.writeJSON(w, http.StatusOK, map[string]any{
-		"goal":      goal,
-		"reordered": reordered,
+	game, err := s.gameEnvelope(r.Context(), func(ctx context.Context) (store.GameAward, error) {
+		return s.store.AwardGoalDoneXP(ctx, goal.ID)
 	})
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+
+	w.Header().Set("ETag", etag(goal.ID, goal.Version))
+	s.writeJSON(w, http.StatusOK, goalWriteResponse{Goal: goal, Reordered: reordered, Game: game})
 }
 
 func (s *Server) deleteGoal(w http.ResponseWriter, r *http.Request) {
@@ -391,7 +445,7 @@ func (s *Server) listTasks(w http.ResponseWriter, r *http.Request) {
 
 	week := r.URL.Query().Get("week")
 	projects := splitCSV(r.URL.Query().Get("project"))
-	if err := validateAllProjects(projects); err != nil {
+	if err := s.validateProjects(r.Context(), projects); err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -416,10 +470,16 @@ func (s *Server) createTask(w http.ResponseWriter, r *http.Request) {
 		GoalID    *int64   `json:"goal_id"`
 		Steps     []string `json:"steps"`
 		DoneMeans *string  `json:"done_means"`
+		SkillIDs  []int64  `json:"skill_ids"`
 	}
 
 	if err := decodeJSON(r, &in); err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if status, message := s.validateSkillIDs(r, in.SkillIDs, true); status != 0 {
+		s.writeError(w, status, message)
 		return
 	}
 
@@ -436,7 +496,7 @@ func (s *Server) createTask(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := validateOneOf(in.Project, "project", allowedProjects); err != nil {
+	if err := s.validateProjectID(r.Context(), in.Project); err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -460,6 +520,7 @@ func (s *Server) createTask(w http.ResponseWriter, r *http.Request) {
 		GoalID:    in.GoalID,
 		Steps:     in.Steps,
 		DoneMeans: optionalText(in.DoneMeans),
+		SkillIDs:  in.SkillIDs,
 	})
 	if err != nil {
 		s.handleStoreError(w, err)
@@ -511,6 +572,19 @@ func (s *Server) patchTask(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	if patch.Project != nil {
+		if err := s.validateProjectID(r.Context(), *patch.Project); err != nil {
+			s.writeError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	if patch.SkillIDs != nil {
+		if status, message := s.validateSkillIDs(r, *patch.SkillIDs, true); status != 0 {
+			s.writeError(w, status, message)
+			return
+		}
+	}
 
 	task, err := s.store.UpdateTask(r.Context(), id, version, patch)
 	if err != nil {
@@ -527,8 +601,16 @@ func (s *Server) patchTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	game, err := s.gameEnvelope(r.Context(), func(ctx context.Context) (store.GameAward, error) {
+		return s.store.SyncTaskXP(ctx, task.ID)
+	})
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+
 	w.Header().Set("ETag", etag(task.ID, task.Version))
-	s.writeJSON(w, http.StatusOK, task)
+	s.writeJSON(w, http.StatusOK, taskWriteResponse{Task: task, Game: game})
 }
 
 func (s *Server) deleteTask(w http.ResponseWriter, r *http.Request) {
@@ -554,7 +636,7 @@ func (s *Server) listLogs(w http.ResponseWriter, r *http.Request) {
 
 	categories := splitCSV(r.URL.Query().Get("category"))
 	for _, category := range categories {
-		if err := validateOneOf(category, "category", allowedCategories); err != nil {
+		if err := s.validateCategoryID(r.Context(), category); err != nil {
 			s.writeError(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -612,6 +694,7 @@ func (s *Server) createLog(w http.ResponseWriter, r *http.Request) {
 		URL        *string `json:"url"`
 		GoalID     *int64  `json:"goal_id"`
 		OccurredAt *string `json:"occurred_at"`
+		SkillIDs   []int64 `json:"skill_ids"`
 	}
 
 	if err := decodeJSON(r, &in); err != nil {
@@ -628,7 +711,7 @@ func (s *Server) createLog(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := validateOneOf(in.CategoryID, "category", allowedCategories); err != nil {
+	if err := s.validateCategoryID(r.Context(), in.CategoryID); err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -652,6 +735,11 @@ func (s *Server) createLog(w http.ResponseWriter, r *http.Request) {
 		occurredAt = *in.OccurredAt
 	}
 
+	if status, message := s.validateSkillIDs(r, in.SkillIDs, false); status != 0 {
+		s.writeError(w, status, message)
+		return
+	}
+
 	entry, err := s.store.CreateLogEntry(r.Context(), store.NewLogEntry{
 		CategoryID: in.CategoryID,
 		Title:      title,
@@ -659,6 +747,15 @@ func (s *Server) createLog(w http.ResponseWriter, r *http.Request) {
 		URL:        optionalText(in.URL),
 		GoalID:     in.GoalID,
 		OccurredAt: occurredAt,
+		SkillIDs:   in.SkillIDs,
+	})
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+
+	game, err := s.gameEnvelope(r.Context(), func(ctx context.Context) (store.GameAward, error) {
+		return s.store.AwardLogXP(ctx, entry.ID)
 	})
 	if err != nil {
 		s.handleStoreError(w, err)
@@ -666,7 +763,7 @@ func (s *Server) createLog(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Location", fmt.Sprintf("/api/logs/%d", entry.ID))
-	s.writeJSON(w, http.StatusCreated, entry)
+	s.writeJSON(w, http.StatusCreated, logWriteResponse{LogEntry: entry, Game: game})
 }
 
 func (s *Server) deleteLog(w http.ResponseWriter, r *http.Request) {
@@ -752,6 +849,19 @@ func (s *Server) categories(w http.ResponseWriter, r *http.Request) {
 	s.writeJSON(w, http.StatusOK, map[string]any{"categories": categories})
 }
 
+func (s *Server) projects(w http.ResponseWriter, r *http.Request) {
+	projects, err := s.store.ListProjects(r.Context())
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+	if projects == nil {
+		projects = []store.Project{}
+	}
+
+	s.writeJSON(w, http.StatusOK, projectsResponse{Projects: projects})
+}
+
 func (s *Server) listReviews(w http.ResponseWriter, r *http.Request) {
 	if err := requireKnownQuery(r, "from", "to"); err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
@@ -831,7 +941,15 @@ func (s *Server) upsertReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.writeJSON(w, http.StatusOK, out)
+	game, err := s.gameEnvelope(r.Context(), func(ctx context.Context) (store.GameAward, error) {
+		return s.store.AwardReviewXP(ctx, out.Date)
+	})
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+
+	s.writeJSON(w, http.StatusOK, reviewWriteResponse{DailyReview: out, Game: game})
 }
 
 func (s *Server) listMetrics(w http.ResponseWriter, r *http.Request) {
@@ -913,8 +1031,16 @@ func (s *Server) createMetric(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	game, err := s.gameEnvelope(r.Context(), func(ctx context.Context) (store.GameAward, error) {
+		return s.store.AwardMetricXP(ctx, metric.ID)
+	})
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+
 	w.Header().Set("Location", fmt.Sprintf("/api/metrics/%d", metric.ID))
-	s.writeJSON(w, http.StatusCreated, metric)
+	s.writeJSON(w, http.StatusCreated, metricWriteResponse{Metric: metric, Game: game})
 }
 
 func (s *Server) metricDefs(w http.ResponseWriter, r *http.Request) {
@@ -938,7 +1064,13 @@ func (s *Server) getCheckpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.writeJSON(w, http.StatusOK, checkpoint)
+	game, err := s.gameEnvelope(r.Context(), nil)
+	if err != nil {
+		s.handleStoreError(w, err)
+		return
+	}
+
+	s.writeJSON(w, http.StatusOK, checkpointWriteResponse{Checkpoint: checkpoint, Game: game})
 }
 
 func (s *Server) putCheckpoint(w http.ResponseWriter, r *http.Request) {
@@ -991,6 +1123,7 @@ func decodeTaskPatch(r *http.Request) (store.TaskPatch, error) {
 
 	allowed := map[string]struct{}{
 		"title": {}, "project": {}, "goal_id": {}, "status": {}, "done_means": {},
+		"skill_ids": {},
 	}
 
 	var patch store.TaskPatch
@@ -1015,7 +1148,8 @@ func decodeTaskPatch(r *http.Request) (store.TaskPatch, error) {
 			if err := json.Unmarshal(value, &project); err != nil {
 				return store.TaskPatch{}, fmt.Errorf("project must be a string")
 			}
-			if err := validateOneOf(project, "project", allowedProjects); err != nil {
+			project = strings.TrimSpace(project)
+			if err := requireNonBlank(project, "project"); err != nil {
 				return store.TaskPatch{}, err
 			}
 			patch.Project = &project
@@ -1051,6 +1185,14 @@ func decodeTaskPatch(r *http.Request) (store.TaskPatch, error) {
 				return store.TaskPatch{}, fmt.Errorf("done_means must be a string")
 			}
 			patch.DoneMeans = stringPointer(strings.TrimSpace(doneMeans))
+		case "skill_ids":
+			// Absent means "leave the links alone". Present-but-empty is a deliberate attempt to
+			// strip every skill, which the invariant forbids - the handler turns it into a 422.
+			var skillIDs []int64
+			if err := json.Unmarshal(value, &skillIDs); err != nil {
+				return store.TaskPatch{}, fmt.Errorf("skill_ids must be an array of integers")
+			}
+			patch.SkillIDs = &skillIDs
 		}
 	}
 
@@ -1073,19 +1215,6 @@ func decodeRawObject(r *http.Request) (map[string]json.RawMessage, error) {
 	}
 
 	return raw, nil
-}
-
-func enrichPlanWeek(plan *PlanWeek, week store.Week) {
-	code := week.Code
-	phase := week.Phase
-	start := week.StartDate
-	end := week.EndDate
-
-	plan.Code = &code
-	plan.Phase = &phase
-	plan.Focus = week.Focus
-	plan.StartDate = &start
-	plan.EndDate = &end
 }
 
 func isoWeekday(day time.Time) int {
