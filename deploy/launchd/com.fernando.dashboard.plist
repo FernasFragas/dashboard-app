@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.fernando.dashboard</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>__BIN_PATH__</string>
+    <string>-addr</string>
+    <string>__ADDR__</string>
+    <string>-data</string>
+    <string>__DATA_DIR__</string>
+    <string>-tz</string>
+    <string>__TZ__</string>
+    <string>-log-format</string>
+    <string>json</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>__DATA_DIR__/logs/dashboard.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>__DATA_DIR__/logs/dashboard.err.log</string>
+</dict>
+</plist>

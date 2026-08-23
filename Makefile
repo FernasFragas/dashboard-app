@@ -1,6 +1,10 @@
 SHELL := /bin/bash
 
-.PHONY: dev seed-gen fmt vet lint typecheck test check
+BIN ?= bin/dashboard
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+EMBED_DIST := internal/web/dist
+
+.PHONY: dev build clean-build seed-gen fmt vet lint typecheck test check
 
 dev:
 	@set -euo pipefail; \
@@ -10,8 +14,20 @@ dev:
 	(cd web && pnpm dev 2>&1 | prefix vite) & \
 	wait
 
-# Regenerate the committed seed from the master plan. The server never reads the markdown, so
-# a parser bug can never block a boot - this is the only place the two meet.
+build:
+	cd web && pnpm build
+	rm -rf $(EMBED_DIST)
+	mkdir -p $(EMBED_DIST)
+	cp -R web/dist/. $(EMBED_DIST)/
+	test -f $(EMBED_DIST)/index.html
+	test -n "$$(find $(EMBED_DIST) -type f -print -quit)"
+	CGO_ENABLED=0 go build -tags embed_frontend -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN) ./cmd/server
+
+clean-build:
+	rm -rf $(BIN) $(EMBED_DIST) web/dist
+
+# Regenerate the committed default seed from the master plan. Runtime custom plans are loaded
+# with cmd/server -plan.
 seed-gen:
 	go run ./cmd/seedgen -year 2026 -out internal/seed/seed.json master-plan-v5.md
 
