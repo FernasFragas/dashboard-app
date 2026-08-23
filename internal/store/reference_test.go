@@ -61,13 +61,53 @@ func TestListCategories(t *testing.T) {
 	}
 }
 
-// The CHECK on the seeded slug turns a typo into a boot failure rather than an orphan category.
-func TestCategoryIDIsConstrained(t *testing.T) {
+// Category slugs belong to the loaded plan, so the schema does not hardcode this repo's eight.
+func TestCategoryIDIsPlanData(t *testing.T) {
 	s := newTestStore(t)
 
 	_, err := s.db.ExecContext(context.Background(), `
-		INSERT INTO categories (id, label, icon, sort_order) VALUES ('typo', 'Typo', '?', 9)`)
-	if !errors.Is(classify("insert category", err), ErrConstraint) {
+		INSERT INTO categories (id, label, icon, sort_order) VALUES ('custom', 'Custom', '?', 9)`)
+	if err != nil {
+		t.Fatalf("insert custom category: %v", err)
+	}
+}
+
+func TestListProjectsAndExistence(t *testing.T) {
+	ctx := context.Background()
+	s := newTestStore(t)
+
+	projects, err := s.ListProjects(ctx)
+	if err != nil {
+		t.Fatalf("list projects: %v", err)
+	}
+	if len(projects) != 8 {
+		t.Fatalf("projects = %d, want 8 fixtures", len(projects))
+	}
+
+	ok, err := s.ProjectExists(ctx, "gateway")
+	if err != nil {
+		t.Fatalf("project exists: %v", err)
+	}
+	if !ok {
+		t.Fatal("gateway project missing")
+	}
+
+	ok, err = s.ProjectExists(ctx, "not-a-project")
+	if err != nil {
+		t.Fatalf("project exists unknown: %v", err)
+	}
+	if ok {
+		t.Fatal("unknown project reported as existing")
+	}
+}
+
+func TestProjectForeignKeyRestrictsDeletion(t *testing.T) {
+	ctx := context.Background()
+	s := newTestStore(t)
+	createTask(t, s, "W1", "uses gateway", "gateway")
+
+	_, err := s.db.ExecContext(ctx, `DELETE FROM projects WHERE id = 'gateway'`)
+	if !errors.Is(classify("delete project", err), ErrConstraint) {
 		t.Errorf("error = %v, want ErrConstraint", err)
 	}
 }

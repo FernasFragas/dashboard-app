@@ -100,4 +100,13 @@ func TestListMetricDefs(t *testing.T) {
 	if defs[0].Target == nil || *defs[0].Target != "<0.8s" {
 		t.Errorf("target = %v, want the plan's prose value", defs[0].Target)
 	}
+	if defs[0].Slug == nil || *defs[0].Slug != "p95_latency" {
+		t.Errorf("slug = %v, want p95_latency", defs[0].Slug)
+	}
+	if defs[0].Definition == nil || *defs[0].Definition == "" {
+		t.Errorf("definition = %v, want field-guide help", defs[0].Definition)
+	}
+	if defs[0].HowToMeasure == nil || *defs[0].HowToMeasure == "" {
+		t.Errorf("how_to_measure = %v, want field-guide help", defs[0].HowToMeasure)
+	}
 }

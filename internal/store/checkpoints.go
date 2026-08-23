@@ -12,12 +12,13 @@ func (s *Store) GetCheckpoint(ctx context.Context, week string) (Checkpoint, err
 	var (
 		c         Checkpoint
 		questions string
+		helpers   *string
 		answers   *string
 	)
 
 	err := s.db.QueryRowContext(ctx, `
-		SELECT id, week, questions, answers, completed_at FROM checkpoints WHERE week = ?`, week,
-	).Scan(&c.ID, &c.Week, &questions, &answers, &c.CompletedAt)
+		SELECT id, week, questions, helpers, answers, completed_at FROM checkpoints WHERE week = ?`, week,
+	).Scan(&c.ID, &c.Week, &questions, &helpers, &answers, &c.CompletedAt)
 	if err != nil {
 		return Checkpoint{}, classify(fmt.Sprintf("get checkpoint %s", week), err)
 	}
@@ -26,9 +27,27 @@ func (s *Store) GetCheckpoint(ctx context.Context, week string) (Checkpoint, err
 		return Checkpoint{}, fmt.Errorf("decode checkpoint %s questions: %w", week, err)
 	}
 
+	if helpers != nil {
+		if err := json.Unmarshal([]byte(*helpers), &c.Helpers); err != nil {
+			return Checkpoint{}, fmt.Errorf("decode checkpoint %s helpers: %w", week, err)
+		}
+		if len(c.Helpers) != len(c.Questions) {
+			return Checkpoint{}, fmt.Errorf(
+				"decode checkpoint %s: got %d helpers for %d questions: %w",
+				week, len(c.Helpers), len(c.Questions), ErrConstraint,
+			)
+		}
+	}
+
 	if answers != nil {
 		if err := json.Unmarshal([]byte(*answers), &c.Answers); err != nil {
 			return Checkpoint{}, fmt.Errorf("decode checkpoint %s answers: %w", week, err)
+		}
+		if len(c.Answers) != len(c.Questions) {
+			return Checkpoint{}, fmt.Errorf(
+				"decode checkpoint %s: got %d answers for %d questions: %w",
+				week, len(c.Answers), len(c.Questions), ErrConstraint,
+			)
 		}
 	}
 

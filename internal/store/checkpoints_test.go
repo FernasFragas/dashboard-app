@@ -10,9 +10,11 @@ func insertCheckpoint(t *testing.T, s *Store, week string) {
 	t.Helper()
 
 	_, err := s.db.ExecContext(context.Background(), `
-		INSERT INTO checkpoints (week, questions, answers, completed_at)
-		VALUES (?, ?, NULL, NULL)`,
-		week, `["eval number?","chaos falsified anything?","PR merged or stale?"]`)
+		INSERT INTO checkpoints (week, questions, helpers, answers, completed_at)
+		VALUES (?, ?, ?, NULL, NULL)`,
+		week,
+		`["eval number?","chaos falsified anything?","PR merged or stale?"]`,
+		`["Exact sentence with X and Y.","Name the belief that died.","Status plus next move."]`)
 	if err != nil {
 		t.Fatalf("insert checkpoint fixture: %v", err)
 	}
@@ -32,11 +34,29 @@ func TestGetCheckpoint(t *testing.T) {
 	if len(c.Questions) != 3 {
 		t.Errorf("questions = %d, want 3", len(c.Questions))
 	}
+	if len(c.Helpers) != 3 || c.Helpers[0] != "Exact sentence with X and Y." {
+		t.Errorf("helpers = %v, want indexed helper text", c.Helpers)
+	}
 	if c.Answers != nil {
 		t.Errorf("answers = %v, want nil before the first save", c.Answers)
 	}
 	if c.CompletedAt != nil {
 		t.Errorf("completed_at = %v, want nil", *c.CompletedAt)
+	}
+}
+
+func TestGetCheckpointRejectsHelperLengthMismatch(t *testing.T) {
+	s := newTestStore(t)
+
+	_, err := s.db.ExecContext(context.Background(), `
+		INSERT INTO checkpoints (week, questions, helpers)
+		VALUES ('W12', '["one?","two?"]', '["only one"]')`)
+	if err != nil {
+		t.Fatalf("insert checkpoint fixture: %v", err)
+	}
+
+	if _, err := s.GetCheckpoint(context.Background(), "W12"); !errors.Is(err, ErrConstraint) {
+		t.Errorf("error = %v, want ErrConstraint", err)
 	}
 }
 
