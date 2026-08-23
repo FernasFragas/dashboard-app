@@ -3,8 +3,9 @@
 Single-user productivity dashboard. One Go binary with an embedded React frontend, a SQLite
 file, reached from a laptop and a phone over Tailscale.
 
-**Companion documents:** [DATABASE.md](DATABASE.md) (schema, the source of `001_init.sql`) ·
-[API.md](API.md) (endpoint contract) · [adr/](adr/) (why each choice was made).
+**Companion documents:** [DATABASE.md](DATABASE.md) (schema, the source of migrations) ·
+[API.md](API.md) (endpoint contract) · [PLAN-FORMAT.md](PLAN-FORMAT.md) (custom plan format) ·
+[RUN_LOCALLY.md](RUN_LOCALLY.md) (local setup) · [adr/](adr/) (why each choice was made).
 
 ---
 
@@ -22,9 +23,9 @@ file, reached from a laptop and a phone over Tailscale.
 │  cmd/server        flags, wiring, lifecycle    │
 │  internal/log      slog handler selection      │
 │  internal/api      middleware chain + handlers │
-│  internal/plan     pure functions: week, streak│
+│  internal/plan     markdown parser + helpers   │
 │  internal/store    SQLite: migrations + CRUD   │
-│  internal/seed     seed.json + additive loader │
+│  internal/seed     seed.json + reference upsert│
 │  internal/web      go:embed web/dist           │
 │  internal/backup   nightly VACUUM INTO ticker  │
 └────────────────────────┬───────────────────────┘
@@ -41,15 +42,21 @@ file, reached from a laptop and a phone over Tailscale.
 | `cmd/server` | Flag parsing, dependency wiring, HTTP server lifecycle, graceful shutdown. Fails fast and exits non-zero if migrations, seeding, or the DB open fail. | Contain business logic. |
 | `internal/log` | Building the `*slog.Logger` — text handler when `-log-format=text`, JSON when `json`. | Be imported by `store` or `plan` (ADR-004: no logging below the API layer). |
 | `internal/api` | Transport only: decode, validate, call one or more store methods, encode, map errors to status codes. Owns the middleware chain and is the **only** place errors are logged. | Contain SQL, or reach into `database/sql`. |
-| `internal/plan` | Pure functions with no I/O: plan-week resolution, streak calculation, week-completion percentage. Fully unit-testable. | Touch the DB, the clock, or the logger — `now` and the week list are passed in. |
+| `internal/plan` | Portable plan parsing: markdown sections, optional `plan.yaml`, and validation. | Touch the DB or the logger. |
 | `internal/store` | Opening SQLite, applying migrations, typed CRUD, transactions, optimistic-version checks. Returns wrapped errors and sentinels. | Log. Format anything for HTTP. |
-| `internal/seed` | Holding `seed.json`, and the additive-upsert loader that runs at boot. | Update or delete existing rows. |
+| `internal/seed` | Holding `seed.json`, and the additive reference-upsert loader that runs at boot. | Delete existing rows or overwrite user progress. |
 | `internal/web` | `go:embed web/dist` and the SPA fallback handler. | Know anything about the API. |
 | `internal/backup` | Nightly `VACUUM INTO` ticker and prune-to-14. | Kill the server when a backup fails. |
 
-`cmd/seedgen` is a separate build-time tool: it parses `master-plan-v5.md` into
-`internal/seed/seed.json`. It is **not** part of the server binary — the server only ever reads
-the committed JSON.
+`cmd/seedgen` is a separate build-time tool: it parses `master-plan-v5.md` into the committed
+`internal/seed/seed.json` zero-config default. The server can also parse a user-supplied plan
+at boot with `-plan PLAN.md`, using `plan.yaml` beside it when present.
+
+The seed loader separates reference data from progress data. Reference rows (`projects`,
+`phases`, `skill_tiers`, `weeks`, `rhythm`, `categories`, `metric_defs`, `skills`, and
+checkpoint question/helper text) may be updated from the loaded seed so documentation/help
+corrections reach existing databases. User progress rows and fields (`goals`, `tasks`,
+checkpoint answers, completion timestamps) are insert-only or preserved exactly.
 
 ---
 
@@ -60,7 +67,7 @@ Two layers, deliberately (ADR-004):
 ```
 HTTP request → middleware chain → handler → store method → SQLite
                                      ↓
-                              internal/plan (pure)
+                              internal/api time helpers (pure)
 ```
 
 There is no service layer, no repository interface, no store decorators. The rules that keep
@@ -96,7 +103,7 @@ sequenceDiagram
     Q->>M: PATCH /api/tasks/42  If-Match: W/"42-3"
     M->>M: recover → request log → token check
     M->>H: routed by ServeMux
-    H->>H: validate body + enum
+    H->>H: validate body + workflow enum + plan vocabulary
     H->>S: SetTaskStatus(ctx, 42, "done", version 3)
     S->>D: BEGIN UPDATE ... WHERE id AND version COMMIT
     D-->>S: 1 row
@@ -139,7 +146,7 @@ Failure paths:
 - **Binding:** `-addr 100.x.y.z:8484`, the Tailscale IP. Never `0.0.0.0` — the tailnet ACL is
   the authentication (ADR-003).
 - **Process:** a launchd agent with `KeepAlive`, started at login. macOS, so no systemd.
-- **Startup failure** (migration error, locked DB, unparseable seed): log at `ERROR` with the
+- **Startup failure** (migration error, locked DB, unparseable seed/plan): log at `ERROR` with the
   wrapped cause and exit non-zero. No degraded mode — a half-started app serving 500s is worse
   than one plainly down, because you would trust data that isn't there.
 - **Backups:** nightly `VACUUM INTO backups/dashboard-YYYYMMDD.db`, newest 14 kept. `VACUUM
@@ -159,3 +166,13 @@ One rule, because getting it wrong corrupts the streak — the app's main feedba
 - Every day boundary — streaks, Log-feed grouping, "today", the daily-review key — is computed
   in that zone. A log written at 00:30 local belongs to the day you were awake for, not to the
   previous UTC day.
+
+---
+
+## 7. Scope boundary
+
+The current architecture covers the v1 tracker through M11 plus M9 gamification. The same rule
+holds across both skill tracking and game feedback: store only facts, derive progress. M8 stores
+skill definitions and task/log associations, then derives skill stats at read time. M9 stores XP
+ledger events, rules, and achievement unlock moments, then derives player XP, levels, streaks,
+skill XP, and tiers.
