@@ -1,6 +1,7 @@
 bin/
 *.db
 .pnpm-store/
+internal/web/dist/
 web/dist/
 web/node_modules/
 .idea/
