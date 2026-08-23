@@ -10,7 +10,7 @@ func createTask(t *testing.T, s *Store, week, title, project string) Task {
 	t.Helper()
 
 	task, err := s.CreateTask(context.Background(), NewTask{
-		Week: week, Title: title, Project: project,
+		Week: week, Title: title, Project: project, SkillIDs: []int64{fixtureSkillID},
 	})
 	if err != nil {
 		t.Fatalf("create task %q: %v", title, err)
@@ -29,6 +29,7 @@ func TestCreateTaskDefaults(t *testing.T) {
 		Project:   "gateway",
 		Steps:     []string{"Add a 2s context deadline."},
 		DoneMeans: ptr("a killed provider surfaces no error"),
+		SkillIDs:  []int64{fixtureSkillID},
 	})
 	if err != nil {
 		t.Fatalf("create task: %v", err)
@@ -74,9 +75,10 @@ func TestCreateTaskRejectsBadInput(t *testing.T) {
 		name string
 		in   NewTask
 	}{
-		{"unknown project", NewTask{Week: "W1", Title: "x", Project: "nope"}},
-		{"blank title", NewTask{Week: "W1", Title: "  ", Project: "dash"}},
-		{"unknown week", NewTask{Week: "W99", Title: "x", Project: "dash"}},
+		{"unknown project", NewTask{Week: "W1", Title: "x", Project: "nope", SkillIDs: []int64{fixtureSkillID}}},
+		{"blank title", NewTask{Week: "W1", Title: "  ", Project: "dash", SkillIDs: []int64{fixtureSkillID}}},
+		{"unknown week", NewTask{Week: "W99", Title: "x", Project: "dash", SkillIDs: []int64{fixtureSkillID}}},
+		{"no skills", NewTask{Week: "W1", Title: "x", Project: "dash"}},
 	}
 
 	for _, tc := range tests {
@@ -156,6 +158,7 @@ func TestUpdateTaskUnlinksGoal(t *testing.T) {
 
 	task, err := s.CreateTask(ctx, NewTask{
 		Week: "W1", Title: "Pick a repo", Project: "oss", GoalID: &g.ID,
+		SkillIDs: []int64{fixtureSkillID},
 	})
 	if err != nil {
 		t.Fatalf("create task: %v", err)

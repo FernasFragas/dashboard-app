@@ -82,7 +82,25 @@ func (s *Store) ListLogEntries(ctx context.Context, f LogFilter) ([]LogEntry, er
 		out = append(out, e)
 	}
 
-	return out, classify("list log entries", rows.Err())
+	if err := rows.Err(); err != nil {
+		return nil, classify("list log entries", err)
+	}
+
+	ids := make([]int64, 0, len(out))
+	for _, e := range out {
+		ids = append(ids, e.ID)
+	}
+
+	links, err := s.LogSkillIDs(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range out {
+		out[i].SkillIDs = links[out[i].ID]
+	}
+
+	return out, nil
 }
 
 // CreateLogEntry appends one accomplishment. This is the path the quick-log sheet optimises.
@@ -106,6 +124,14 @@ func (s *Store) CreateLogEntry(ctx context.Context, in NewLogEntry) (LogEntry, e
 		return LogEntry{}, classify("insert log entry id", err)
 	}
 
+	// Evidence links are optional: the quick-log path is the most-used action in the app and
+	// must not grow a required choice (docs/DATABASE.md section 4.14).
+	if len(in.SkillIDs) > 0 {
+		if err := s.SetLogSkills(ctx, id, in.SkillIDs); err != nil {
+			return LogEntry{}, err
+		}
+	}
+
 	return s.GetLogEntry(ctx, id)
 }
 
@@ -124,6 +150,12 @@ func (s *Store) GetLogEntry(ctx context.Context, id int64) (LogEntry, error) {
 	if err != nil {
 		return LogEntry{}, classify(fmt.Sprintf("get log entry %d", id), err)
 	}
+
+	links, err := s.LogSkillIDs(ctx, []int64{e.ID})
+	if err != nil {
+		return LogEntry{}, err
+	}
+	e.SkillIDs = links[e.ID]
 
 	return e, nil
 }
@@ -179,7 +211,10 @@ func (s *Store) SummarizeLogs(ctx context.Context, from, to string) ([]CategoryC
 		query += " AND " + strings.Join(conds, " AND ")
 	}
 
-	query += " GROUP BY c.id, c.label, c.icon, c.sort_order ORDER BY c.sort_order"
+	query += `
+		WHERE c.retired_at IS NULL OR le.id IS NOT NULL
+		GROUP BY c.id, c.label, c.icon, c.sort_order
+		ORDER BY c.sort_order`
 
 	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {

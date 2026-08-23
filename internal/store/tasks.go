@@ -75,7 +75,11 @@ func (s *Store) ListTasks(ctx context.Context, f TaskFilter) ([]Task, error) {
 		out = append(out, t)
 	}
 
-	return out, classify("list tasks", rows.Err())
+	if err := rows.Err(); err != nil {
+		return nil, classify("list tasks", err)
+	}
+
+	return out, s.attachTaskSkills(ctx, out)
 }
 
 // GetTask returns one task by id.
@@ -87,7 +91,36 @@ func (s *Store) GetTask(ctx context.Context, id int64) (Task, error) {
 		return Task{}, classify(fmt.Sprintf("get task %d", id), err)
 	}
 
+	links, err := s.TaskSkillIDs(ctx, []int64{t.ID})
+	if err != nil {
+		return Task{}, err
+	}
+	t.SkillIDs = links[t.ID]
+
 	return t, nil
+}
+
+// attachTaskSkills fills SkillIDs across a list of tasks with a single query.
+func (s *Store) attachTaskSkills(ctx context.Context, tasks []Task) error {
+	if len(tasks) == 0 {
+		return nil
+	}
+
+	ids := make([]int64, 0, len(tasks))
+	for _, t := range tasks {
+		ids = append(ids, t.ID)
+	}
+
+	links, err := s.TaskSkillIDs(ctx, ids)
+	if err != nil {
+		return err
+	}
+
+	for i := range tasks {
+		tasks[i].SkillIDs = links[tasks[i].ID]
+	}
+
+	return nil
 }
 
 // CountTasksByWeek reports done and total for one plan week, for the completion bar.
@@ -115,6 +148,12 @@ func (s *Store) CreateTask(ctx context.Context, in NewTask) (Task, error) {
 		return Task{}, fmt.Errorf("encode steps: %w", err)
 	}
 
+	// Every task builds at least one skill. Enforced here as well as in the handler, because
+	// the store is the last place that can still refuse (docs/DATABASE.md section 4.7).
+	if len(in.SkillIDs) == 0 {
+		return Task{}, fmt.Errorf("create task: at least one skill is required: %w", ErrConstraint)
+	}
+
 	var created Task
 	err = s.tx(ctx, func(tx execer) error {
 		var maxOrder int
@@ -140,10 +179,19 @@ func (s *Store) CreateTask(ctx context.Context, in NewTask) (Task, error) {
 			return classify("insert task id", err)
 		}
 
+		if err := replaceLinks(ctx, tx, "task_skills", "task_id", id, in.SkillIDs); err != nil {
+			return err
+		}
+
 		row := tx.QueryRowContext(ctx, `SELECT `+taskColumns+` FROM tasks WHERE id = ?`, id)
 		created, err = scanTask(row)
+		if err != nil {
+			return classify("read created task", err)
+		}
 
-		return classify("read created task", err)
+		created.SkillIDs = append([]int64(nil), in.SkillIDs...)
+
+		return nil
 	})
 	if err != nil {
 		return Task{}, err
@@ -210,6 +258,17 @@ func (s *Store) UpdateTask(ctx context.Context, id int64, version int, patch Tas
 			return classify(fmt.Sprintf("update task %d", id), err)
 		}
 
+		if patch.SkillIDs != nil {
+			if len(*patch.SkillIDs) == 0 {
+				return fmt.Errorf("update task %d: at least one skill is required: %w",
+					id, ErrConstraint)
+			}
+
+			if err := replaceLinks(ctx, tx, "task_skills", "task_id", id, *patch.SkillIDs); err != nil {
+				return err
+			}
+		}
+
 		row = tx.QueryRowContext(ctx, `SELECT `+taskColumns+` FROM tasks WHERE id = ?`, id)
 		updated, err = scanTask(row)
 
@@ -218,6 +277,12 @@ func (s *Store) UpdateTask(ctx context.Context, id int64, version int, patch Tas
 	if err != nil {
 		return Task{}, err
 	}
+
+	links, err := s.TaskSkillIDs(ctx, []int64{updated.ID})
+	if err != nil {
+		return Task{}, err
+	}
+	updated.SkillIDs = links[updated.ID]
 
 	return updated, nil
 }

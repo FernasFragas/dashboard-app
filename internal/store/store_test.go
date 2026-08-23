@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"errors"
+	"io/fs"
 	"path/filepath"
 	"testing"
 	"time"
@@ -58,6 +59,46 @@ func insertFixtures(t *testing.T, s *Store) {
 
 	ctx := context.Background()
 
+	projects := [][]any{
+		{"synapse", "Synapse", 10},
+		{"gateway", "LLM Gateway", 20},
+		{"dash", "Dashboard", 30},
+		{"oss", "Open source", 40},
+		{"learn", "Learning", 50},
+		{"write", "Writing", 60},
+		{"career", "Career", 70},
+		{"all", "All repos", 80},
+	}
+	for _, p := range projects {
+		if _, err := s.db.ExecContext(ctx, `
+			INSERT INTO projects (id, label, sort_order) VALUES (?, ?, ?)`, p...); err != nil {
+			t.Fatalf("insert project fixture: %v", err)
+		}
+	}
+
+	phases := [][]any{
+		{"P1", "Phase 1", 10},
+		{"P2", "Phase 2", 20},
+		{"P3", "Phase 3", 30},
+	}
+	for _, p := range phases {
+		if _, err := s.db.ExecContext(ctx, `
+			INSERT INTO phases (id, label, sort_order) VALUES (?, ?, ?)`, p...); err != nil {
+			t.Fatalf("insert phase fixture: %v", err)
+		}
+	}
+
+	tiers := [][]any{
+		{"Practitioner", "Practitioner", 10},
+		{"Expert", "Expert", 20},
+	}
+	for _, tier := range tiers {
+		if _, err := s.db.ExecContext(ctx, `
+			INSERT INTO skill_tiers (id, label, sort_order) VALUES (?, ?, ?)`, tier...); err != nil {
+			t.Fatalf("insert skill tier fixture: %v", err)
+		}
+	}
+
 	weeks := [][]any{
 		{"W1", "P1", "2026-08-24", "2026-08-30", "Golden set", 1},
 		{"W5", "P1", "2026-09-21", "2026-09-27", "Chaos", 5},
@@ -100,11 +141,32 @@ func insertFixtures(t *testing.T, s *Store) {
 	}
 
 	if _, err := s.db.ExecContext(ctx, `
-		INSERT INTO metric_defs (name, unit, baseline, target, sort_order)
-		VALUES ('p95 latency (cached)', 's', '>1s', '<0.8s', 1)`); err != nil {
+		INSERT INTO metric_defs (
+			name, slug, unit, baseline, target, definition, how_to_measure, sort_order
+		)
+		VALUES (
+			'p95 latency (cached)', 'p95_latency', 's', '>1s', '<0.8s',
+			'95th-percentile request latency under the standard mixed profile',
+			'Grafana after a 10-min k6 run', 1
+		)`); err != nil {
 		t.Fatalf("insert metric def fixture: %v", err)
 	}
+
+	// Every task builds at least one skill, so the fixtures carry one to link to.
+	if _, err := s.db.ExecContext(ctx, `
+		INSERT INTO skills (id, code, name, description, associate_when, target_tier,
+			sort_order, created_at)
+		VALUES (1, 'tooling', 'Internal tooling', 'Tools that speed the rest of the work.',
+			'the task improves your own workflow with software.', NULL, 10,
+			'2026-08-24T09:00:00Z')`,
+	); err != nil {
+		t.Fatalf("insert skill fixture: %v", err)
+	}
 }
+
+// fixtureSkillID is the skill inserted by insertFixtures, for tests that must satisfy the
+// every-task-has-a-skill invariant without caring which skill it is.
+const fixtureSkillID int64 = 1
 
 func ptr[T any](v T) *T { return &v }
 
@@ -162,8 +224,12 @@ func TestMigrateIsIdempotent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("schema version: %v", err)
 	}
-	if version != 1 {
-		t.Fatalf("schema version = %d, want 1", version)
+
+	// Derived from what is on disk, not hardcoded: every new migration would otherwise have to
+	// remember to bump a number in this test.
+	want := len(migrationFiles(t))
+	if version != want {
+		t.Fatalf("schema version = %d, want %d", version, want)
 	}
 
 	if err := s.Migrate(ctx, migrations.FS); err != nil {
@@ -174,9 +240,83 @@ func TestMigrateIsIdempotent(t *testing.T) {
 		t.Errorf("schema changed on re-run:\nfirst:\n%s\nsecond:\n%s", firstSchema, got)
 	}
 
-	if got := countRows(t, s, "schema_migrations"); got != 1 {
-		t.Errorf("schema_migrations rows = %d, want 1", got)
+	if got := countRows(t, s, "schema_migrations"); got != want {
+		t.Errorf("schema_migrations rows = %d, want %d", got, want)
 	}
+}
+
+func TestMigration004BackfillsDistinctSkillTiers(t *testing.T) {
+	ctx := context.Background()
+	s := newEmptyStore(t)
+
+	if err := s.Migrate(ctx, embeddedMigrationSubset(t,
+		"001_init.sql",
+		"002_field_guide.sql",
+		"003_skills.sql",
+	)); err != nil {
+		t.Fatalf("migrate through 003: %v", err)
+	}
+
+	if _, err := s.db.ExecContext(ctx, `
+		INSERT INTO skills (id, code, name, description, associate_when, target_tier,
+			sort_order, created_at)
+		VALUES
+			(1, 'shipping', 'Shipping', 'Ship production changes.',
+				'the work ships a production change.', 'Expert', 10, '2026-08-24T09:00:00Z'),
+			(2, 'debugging', 'Debugging', 'Diagnose defects.',
+				'the work fixes a defect.', 'Expert', 20, '2026-08-24T09:00:00Z'),
+			(3, 'testing', 'Testing', 'Verify behavior.',
+				'the work adds coverage.', 'Practitioner', 30, '2026-08-24T09:00:00Z')
+	`); err != nil {
+		t.Fatalf("insert duplicate target tiers: %v", err)
+	}
+
+	if err := s.Migrate(ctx, migrations.FS); err != nil {
+		t.Fatalf("migrate through 004: %v", err)
+	}
+
+	for _, tier := range []string{"Expert", "Practitioner"} {
+		var n int
+		if err := s.db.QueryRowContext(ctx,
+			`SELECT count(*) FROM skill_tiers WHERE id = ?`, tier).Scan(&n); err != nil {
+			t.Fatalf("count %s tier: %v", tier, err)
+		}
+		if n != 1 {
+			t.Errorf("skill_tiers[%s] rows = %d, want 1", tier, n)
+		}
+	}
+
+	if got := countRows(t, s, "skills"); got != 3 {
+		t.Errorf("skills rows after migration = %d, want 3", got)
+	}
+}
+
+// migrationFiles lists the embedded migrations, so schema-version assertions track reality
+// instead of a number someone has to remember to update.
+func migrationFiles(t *testing.T) []string {
+	t.Helper()
+
+	names, err := fs.Glob(migrations.FS, "*.sql")
+	if err != nil {
+		t.Fatalf("list migrations: %v", err)
+	}
+
+	return names
+}
+
+func embeddedMigrationSubset(t *testing.T, names ...string) fs.FS {
+	t.Helper()
+
+	files := make(map[string]string, len(names))
+	for _, name := range names {
+		body, err := fs.ReadFile(migrations.FS, name)
+		if err != nil {
+			t.Fatalf("read embedded migration %s: %v", name, err)
+		}
+		files[name] = string(body)
+	}
+
+	return mapFS(files)
 }
 
 func TestMigrateAppliesEveryTable(t *testing.T) {
@@ -185,6 +325,8 @@ func TestMigrateAppliesEveryTable(t *testing.T) {
 	want := []string{
 		"weeks", "rhythm", "categories", "metric_defs", "goals", "tasks",
 		"log_entries", "daily_reviews", "metrics", "checkpoints", "schema_migrations",
+		"xp_rules", "xp_events", "xp_event_skills", "achievements", "achievement_unlocks",
+		"pairing_codes",
 	}
 
 	for _, table := range want {

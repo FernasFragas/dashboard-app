@@ -226,6 +226,218 @@ func TestUpdateGoalRenumbersColumn(t *testing.T) {
 	}
 }
 
+// version guards user edits - title, status, project. Renumbering sort_order is a server-side
+// consequence of someone else's move, not a competing edit, so it must not bump anything.
+//
+// When it did, the moved card bumped twice (the main UPDATE plus the renumber), which made the
+// frontend's optimistic +1 wrong and turned a quick second move into a spurious 412.
+func TestMoveBumpsMovedGoalVersionExactlyOnce(t *testing.T) {
+	ctx := context.Background()
+	s := newTestStore(t)
+
+	first := createGoal(t, s, "first", "dash", "backlog")
+	createGoal(t, s, "second", "dash", "backlog")
+
+	moved, _, err := s.UpdateGoal(ctx, first.ID, first.Version, GoalPatch{
+		Status:   ptr("active"),
+		Position: ptr(0),
+	})
+	if err != nil {
+		t.Fatalf("move goal: %v", err)
+	}
+
+	if moved.Version != first.Version+1 {
+		t.Errorf("version = %d after one move, want %d", moved.Version, first.Version+1)
+	}
+
+	// And the version it reports must be the one a follow-up If-Match can actually use.
+	if _, _, err := s.UpdateGoal(ctx, moved.ID, moved.Version, GoalPatch{
+		Status:   ptr("done"),
+		Position: ptr(0),
+	}); err != nil {
+		t.Fatalf("second move replaying the returned version: %v", err)
+	}
+}
+
+// A neighbour being renumbered must not invalidate its ETag: with 18 seeded goals in Backlog,
+// moving one card would otherwise conflict every other card on the board.
+func TestMoveLeavesOtherGoalVersionsAlone(t *testing.T) {
+	ctx := context.Background()
+	s := newTestStore(t)
+
+	source := []Goal{
+		createGoal(t, s, "backlog one", "dash", "backlog"),
+		createGoal(t, s, "backlog two", "dash", "backlog"),
+		createGoal(t, s, "backlog three", "dash", "backlog"),
+	}
+	target := []Goal{
+		createGoal(t, s, "active one", "dash", "active"),
+		createGoal(t, s, "active two", "dash", "active"),
+	}
+
+	// Move the middle backlog card into the middle of the active column, so both columns are
+	// renumbered and neither is trivially untouched.
+	if _, _, err := s.UpdateGoal(ctx, source[1].ID, source[1].Version, GoalPatch{
+		Status:   ptr("active"),
+		Position: ptr(1),
+	}); err != nil {
+		t.Fatalf("move goal: %v", err)
+	}
+
+	after, err := s.ListGoals(ctx, GoalFilter{})
+	if err != nil {
+		t.Fatalf("list goals: %v", err)
+	}
+
+	versions := make(map[int64]int, len(after))
+	for _, goal := range after {
+		versions[goal.ID] = goal.Version
+	}
+
+	untouched := append(append([]Goal{}, source[0], source[2]), target...)
+	for _, goal := range untouched {
+		if versions[goal.ID] != goal.Version {
+			t.Errorf("goal %q version = %d after a neighbour moved, want %d unchanged",
+				goal.Title, versions[goal.ID], goal.Version)
+		}
+	}
+
+	// The renumbering itself still has to have happened.
+	order := columnOrder(t, s, "active")
+	if len(order) != 3 {
+		t.Fatalf("active column = %v, want 3 cards", order)
+	}
+	if order[1] != source[1].ID {
+		t.Errorf("moved card is at index %d, want 1", indexOf(order, source[1].ID))
+	}
+}
+
+// A cross-column move must return both columns, so the client can apply one payload and skip
+// the follow-up board read.
+func TestUpdateGoalReturnsBothColumns(t *testing.T) {
+	ctx := context.Background()
+	s := newTestStore(t)
+
+	backlog := []Goal{
+		createGoal(t, s, "backlog one", "dash", "backlog"),
+		createGoal(t, s, "backlog two", "dash", "backlog"),
+		createGoal(t, s, "backlog three", "dash", "backlog"),
+	}
+	active := []Goal{
+		createGoal(t, s, "active one", "dash", "active"),
+		createGoal(t, s, "active two", "dash", "active"),
+	}
+
+	moved, reordered, err := s.UpdateGoal(ctx, backlog[0].ID, backlog[0].Version, GoalPatch{
+		Status:   ptr("active"),
+		Position: ptr(1),
+	})
+	if err != nil {
+		t.Fatalf("move goal: %v", err)
+	}
+
+	byID := make(map[int64]Goal, len(reordered))
+	for _, goal := range reordered {
+		if _, dup := byID[goal.ID]; dup {
+			t.Errorf("goal %d appears twice in reordered", goal.ID)
+		}
+		byID[goal.ID] = goal
+	}
+
+	// Target column: the two that were there plus the arrival.
+	for _, goal := range append([]Goal{moved}, active...) {
+		if _, ok := byID[goal.ID]; !ok {
+			t.Errorf("target-column goal %q missing from reordered", goal.Title)
+		}
+	}
+
+	// Source column: the two left behind, which closed the gap.
+	for _, goal := range backlog[1:] {
+		got, ok := byID[goal.ID]
+		if !ok {
+			t.Errorf("source-column goal %q missing from reordered", goal.Title)
+			continue
+		}
+		if got.Status != "backlog" {
+			t.Errorf("goal %q status = %q in reordered, want backlog", goal.Title, got.Status)
+		}
+	}
+
+	// Applying reordered alone must reproduce what a fresh read would show.
+	for _, status := range []string{"active", "backlog"} {
+		fresh, err := s.ListGoals(ctx, GoalFilter{Status: status})
+		if err != nil {
+			t.Fatalf("list %s: %v", status, err)
+		}
+
+		for _, goal := range fresh {
+			payload, ok := byID[goal.ID]
+			if !ok {
+				t.Errorf("goal %q is in %s but absent from reordered", goal.Title, status)
+				continue
+			}
+			if payload.SortOrder != goal.SortOrder {
+				t.Errorf("goal %q sort_order = %d in reordered, want %d",
+					goal.Title, payload.SortOrder, goal.SortOrder)
+			}
+		}
+	}
+}
+
+// A move within one column touches only that column.
+func TestUpdateGoalWithinColumnReturnsOneColumn(t *testing.T) {
+	ctx := context.Background()
+	s := newTestStore(t)
+
+	first := createGoal(t, s, "first", "dash", "active")
+	createGoal(t, s, "second", "dash", "active")
+	createGoal(t, s, "spectator", "dash", "backlog")
+
+	_, reordered, err := s.UpdateGoal(ctx, first.ID, first.Version, GoalPatch{
+		Status:   ptr("active"),
+		Position: ptr(1),
+	})
+	if err != nil {
+		t.Fatalf("move goal: %v", err)
+	}
+
+	if len(reordered) != 2 {
+		t.Fatalf("reordered = %d cards, want just the active column's 2", len(reordered))
+	}
+
+	for _, goal := range reordered {
+		if goal.Status != "active" {
+			t.Errorf("reordered contains a %s card; a same-column move must not touch others",
+				goal.Status)
+		}
+	}
+}
+
+func columnOrder(t *testing.T, s *Store, status string) []int64 {
+	t.Helper()
+
+	goals, err := s.ListGoals(context.Background(), GoalFilter{Status: status})
+	if err != nil {
+		t.Fatalf("list %s goals: %v", status, err)
+	}
+
+	ids := make([]int64, 0, len(goals))
+	for _, goal := range goals {
+		ids = append(ids, goal.ID)
+	}
+
+	return ids
+}
+
+func indexOf(ids []int64, id int64) int {
+	for i, candidate := range ids {
+		if candidate == id {
+			return i
+		}
+	}
+	return -1
+}
+
 func TestListGoalsFilters(t *testing.T) {
 	ctx := context.Background()
 	s := newTestStore(t)
@@ -288,6 +500,7 @@ func TestDeleteGoalPreservesHistory(t *testing.T) {
 
 	task, err := s.CreateTask(ctx, NewTask{
 		Week: "W1", Title: "Pick an OSS target", Project: "oss", GoalID: &g.ID,
+		SkillIDs: []int64{fixtureSkillID},
 	})
 	if err != nil {
 		t.Fatalf("create task: %v", err)

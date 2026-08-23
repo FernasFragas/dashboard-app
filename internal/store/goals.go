@@ -145,9 +145,12 @@ func (s *Store) CreateGoal(ctx context.Context, in NewGoal) (Goal, error) {
 
 // UpdateGoal applies patch to the goal, guarded by the expected version.
 //
-// It returns the updated goal plus every other card whose sort_order the move changed, so the
-// client never computes ordering itself. A stale version yields ErrConflict; the API maps that
-// to 412 (docs/API.md section 1).
+// It returns the updated goal plus every card whose sort_order the move changed - both the
+// target column and, on a cross-column move, the column the card left - so the client can
+// apply one payload without a follow-up read. A stale version yields ErrConflict; the API maps
+// that to 412 (docs/API.md section 1).
+//
+// Only the moved card's version is bumped. Renumbering is not an edit to the cards it shifts.
 func (s *Store) UpdateGoal(ctx context.Context, id int64, version int, patch GoalPatch) (Goal, []Goal, error) {
 	var (
 		updated   Goal
@@ -218,11 +221,15 @@ func (s *Store) UpdateGoal(ctx context.Context, id int64, version int, patch Goa
 			}
 		}
 
-		// The card left a column: close the gap it left behind.
+		// The card left a column: close the gap it left behind. Those cards ship back with the
+		// response too, so the client can apply one payload and be done - without them it has
+		// to refetch the whole board after every move (docs/API.md, PATCH /api/goals/{id}).
 		if patch.Status != nil && targetStatus != before.Status {
-			if _, err := s.renumberColumn(ctx, tx, before.Status, 0, -1); err != nil {
+			source, err := s.renumberColumn(ctx, tx, before.Status, 0, -1)
+			if err != nil {
 				return err
 			}
+			reordered = append(reordered, source...)
 		}
 
 		updated, err = getGoalTx(ctx, tx, id)
@@ -286,9 +293,13 @@ func (s *Store) renumberColumn(ctx context.Context, tx execer, status string, mo
 		ids = moveTo(ids, moved, position)
 	}
 
+	// sort_order only, deliberately: version guards user edits, and being renumbered because a
+	// neighbour moved is not an edit to this card. Bumping here would double-bump the moved
+	// card (the caller's UPDATE already did it) and invalidate the ETag of every other card in
+	// the column, so an unrelated goal would 412 on its next write.
 	for i, id := range ids {
 		if _, err := tx.ExecContext(ctx,
-			`UPDATE goals SET sort_order = ?, version = version + 1 WHERE id = ?`,
+			`UPDATE goals SET sort_order = ? WHERE id = ?`,
 			(i+1)*sortStep, id,
 		); err != nil {
 			return nil, classify("renumber column", err)

@@ -10,6 +10,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
 	"time"
 
 	_ "modernc.org/sqlite" // pure-Go driver, no CGO (ADR-001)
@@ -26,7 +30,8 @@ var (
 // Store is the single handle onto the database. Methods are grouped by table across the files
 // in this package; handlers depend on this one concrete type (ADR-004).
 type Store struct {
-	db *sql.DB
+	db   *sql.DB
+	path string
 
 	// now supplies timestamps for created_at, done_at and friends. Tests replace it to get
 	// deterministic values; production leaves it as time.Now.
@@ -60,7 +65,7 @@ func Open(path string) (*Store, error) {
 		return nil, fmt.Errorf("ping sqlite %q: %w", path, err)
 	}
 
-	s := &Store{db: db, now: time.Now}
+	s := &Store{db: db, path: path, now: time.Now}
 
 	if err := s.verifyPragmas(); err != nil {
 		_ = db.Close()
@@ -83,6 +88,42 @@ func (s *Store) DB() *sql.DB { return s.db }
 
 // SetClock replaces the time source. Intended for tests.
 func (s *Store) SetClock(now func() time.Time) { s.now = now }
+
+// SnapshotBeforePlanReplace writes a consistent SQLite copy before destructive plan replacement.
+func (s *Store) SnapshotBeforePlanReplace(ctx context.Context, planID string) (string, error) {
+	if s.path == "" {
+		return "", errors.New("store path is empty")
+	}
+
+	dir := filepath.Join(filepath.Dir(s.path), "backups")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", fmt.Errorf("create backup dir: %w", err)
+	}
+
+	stamp := s.now().UTC().Format("20060102T150405Z")
+	name := fmt.Sprintf("pre-plan-%s-%s.db", safeBackupName(planID), stamp)
+	path := filepath.Join(dir, name)
+
+	if _, err := s.db.ExecContext(ctx, "VACUUM INTO "+sqlQuote(path)); err != nil {
+		return "", classify("snapshot before plan replace", err)
+	}
+
+	return path, nil
+}
+
+func safeBackupName(value string) string {
+	value = strings.ToLower(strings.TrimSpace(value))
+	value = regexp.MustCompile(`[^a-z0-9._-]+`).ReplaceAllString(value, "-")
+	value = strings.Trim(value, "-.")
+	if value == "" {
+		return "plan"
+	}
+	return value
+}
+
+func sqlQuote(value string) string {
+	return "'" + strings.ReplaceAll(value, "'", "''") + "'"
+}
 
 // verifyPragmas fails loudly if the DSN did not take effect. A silently-off foreign_keys
 // pragma disables the ON DELETE SET NULL rules, so it is checked rather than assumed.
