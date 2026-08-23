@@ -1,5 +1,81 @@
 {
   "generated_from": "master-plan-v5.md",
+  "plan": {
+    "id": "master-plan-v5",
+    "name": "Master Plan v5",
+    "active_goal_limit": 3
+  },
+  "projects": [
+    {
+      "id": "synapse",
+      "label": "Synapse",
+      "sort_order": 10
+    },
+    {
+      "id": "gateway",
+      "label": "LLM Gateway",
+      "sort_order": 20
+    },
+    {
+      "id": "dash",
+      "label": "Dashboard",
+      "sort_order": 30
+    },
+    {
+      "id": "oss",
+      "label": "Open source",
+      "sort_order": 40
+    },
+    {
+      "id": "learn",
+      "label": "Learning",
+      "sort_order": 50
+    },
+    {
+      "id": "write",
+      "label": "Writing",
+      "sort_order": 60
+    },
+    {
+      "id": "career",
+      "label": "Career",
+      "sort_order": 70
+    },
+    {
+      "id": "all",
+      "label": "All repos",
+      "sort_order": 80
+    }
+  ],
+  "phases": [
+    {
+      "id": "P1",
+      "label": "P1",
+      "sort_order": 10
+    },
+    {
+      "id": "P2",
+      "label": "P2",
+      "sort_order": 20
+    },
+    {
+      "id": "P3",
+      "label": "P3",
+      "sort_order": 30
+    }
+  ],
+  "skill_tiers": [
+    {
+      "id": "Expert",
+      "label": "Expert",
+      "sort_order": 10
+    },
+    {
+      "id": "Practitioner",
+      "label": "Practitioner",
+      "sort_order": 20
+    }
+  ],
   "weeks": [
     {
       "code": "W1",
@@ -245,73 +321,113 @@
   "metric_defs": [
     {
       "name": "Rejection rate v2 vs v1",
-      "unit": null,
+      "slug": "rejection_rate",
+      "unit": "%",
       "baseline": null,
       "target": "measurably ↓, CI-gated",
+      "definition": "Share of golden-set summaries ValidateAgainstEvidence rejects",
+      "how_to_measure": "make eval over the frozen 30-window set; record per prompt × model",
       "sort_order": 1
     },
     {
       "name": "p95 latency (cached)",
-      "unit": null,
+      "slug": "p95_latency",
+      "unit": "s",
       "baseline": "\u003e1s",
       "target": "\u003c0.8s",
+      "definition": "95th-percentile request latency under the standard mixed profile",
+      "how_to_measure": "Grafana after a 10-min k6 run; never compare across different profiles",
       "sort_order": 2
     },
     {
       "name": "p99 latency",
-      "unit": null,
+      "slug": "p99_latency",
+      "unit": "s",
       "baseline": "\u003e2s",
       "target": "\u003c2s",
+      "definition": "99th-percentile request latency under the standard mixed profile",
+      "how_to_measure": "Same run as p95 — read both off one k6 pass",
       "sort_order": 3
     },
     {
       "name": "Cache hit rate",
-      "unit": null,
+      "slug": "cache_hit_rate",
+      "unit": "%",
       "baseline": "\u003c20%",
       "target": "\u003e60%",
+      "definition": "hits ÷ (hits + misses)",
+      "how_to_measure": "Gateway cache metric over a 10-min replayed-traffic window",
       "sort_order": 4
     },
     {
       "name": "Cost per 1k queries",
-      "unit": null,
+      "slug": "cost_per_1k",
+      "unit": "€",
       "baseline": null,
       "target": "−30%",
+      "definition": "Euro cost per 1,000 requests",
+      "how_to_measure": "API pricing × tokens, or GPU-hour ÷ requests served — say which in the note",
       "sort_order": 5
     },
     {
       "name": "Fine-tuned vs base on golden set",
-      "unit": null,
+      "slug": "tuned_vs_base",
+      "unit": "ratio",
       "baseline": null,
       "target": "≥ baseline at lower cost",
+      "definition": "Tuned ÷ base rejection rate on the golden set",
+      "how_to_measure": "Eval runner, both providers, same day",
       "sort_order": 6
     },
     {
       "name": "Throughput, concurrent writers",
-      "unit": null,
+      "slug": "throughput_concurrent",
+      "unit": "msg/s",
       "baseline": "\"750\" (SQLite, misleading)",
       "target": "real measured number",
+      "definition": "Messages per second with N concurrent writers on Postgres",
+      "how_to_measure": "Rerun the W5 load profile; put N in the note",
       "sort_order": 7
     },
     {
       "name": "OSS PRs merged",
-      "unit": null,
+      "slug": "oss_prs_merged",
+      "unit": "PRs",
       "baseline": "0",
       "target": "2",
+      "definition": "PRs you opened that a maintainer merged",
+      "how_to_measure": "Count from your GitHub PR list; merged only — open or closed-unmerged do not count",
       "sort_order": 8
     },
     {
       "name": "Applications sent",
-      "unit": null,
+      "slug": "applications_sent",
+      "unit": "applications",
       "baseline": "0",
       "target": "20",
+      "definition": "Applications actually submitted",
+      "how_to_measure": "Count the 📮 entries in the Log for the period; the Log is the record, this is the roll-up",
       "sort_order": 9
     },
     {
       "name": "Medium posts",
-      "unit": null,
+      "slug": "medium_posts",
+      "unit": "posts",
       "baseline": null,
       "target": "2 by W7 · 3 by B1 · 5 by Feb",
+      "definition": "Posts published, not drafted",
+      "how_to_measure": "Count live URLs; a draft is a Learned bullet, not a metric",
       "sort_order": 10
+    },
+    {
+      "name": "Time to first token",
+      "slug": "ttft",
+      "unit": "s",
+      "baseline": null,
+      "target": "tracked from W8",
+      "definition": "Request to first streamed token through the gateway",
+      "how_to_measure": "TTFT metric during the standard k6 profile",
+      "sort_order": 11
     }
   ],
   "goals": [
@@ -492,7 +608,10 @@
         "Add `eval/golden/README.md`: one line per file saying what it tests. Commit."
       ],
       "done_means": "set is in git and treated as read-only from now on.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "evals"
+      ]
     },
     {
       "seed_key": "W1:summary-v2-prompt-in-a-versioned-prompts-dir",
@@ -505,7 +624,10 @@
         "Make `SummaryPromptVersion` load by version from that dir via config."
       ],
       "done_means": "the pipeline runs with either version by flipping one config value.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "evals"
+      ]
     },
     {
       "seed_key": "W1:oss-target-picked",
@@ -518,7 +640,10 @@
         "Pick one. Watch → Issues on GitHub. Bookmark 3 open issues touching code you understand."
       ],
       "done_means": "one repo chosen, 3 candidate issues bookmarked.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "oss"
+      ]
     },
     {
       "seed_key": "W1:subscriptions-ddia-ch-1",
@@ -530,7 +655,10 @@
         "Read DDIA ch.1; write 3 bullets in the daily log."
       ],
       "done_means": "receipts exist, notes exist.",
-      "sort_order": 400
+      "sort_order": 400,
+      "skills": [
+        "distsys"
+      ]
     },
     {
       "seed_key": "W1:dashboard-v1-g0",
@@ -541,7 +669,10 @@
         "Execute `dashboard-plan.md` M0→M6 in order. Hard stop at 14h — whatever's missing goes to the stretch list."
       ],
       "done_means": "the 6 acceptance checks pass on your phone over Tailscale.",
-      "sort_order": 500
+      "sort_order": 500,
+      "skills": [
+        "tooling"
+      ]
     },
     {
       "seed_key": "W2:eval-runner",
@@ -555,7 +686,10 @@
         "Add `make eval`."
       ],
       "done_means": "`make eval` produces a committed results file.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "evals"
+      ]
     },
     {
       "seed_key": "W2:core-metrics-baseline-logged",
@@ -568,7 +702,10 @@
         "Commit the baseline results; log the headline numbers in the dashboard (📊)."
       ],
       "done_means": "baseline numbers exist in git + dashboard.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "evals"
+      ]
     },
     {
       "seed_key": "W2:aws-saa-started",
@@ -580,7 +717,10 @@
         "Do module 1 on Thursday; log it (📚)."
       ],
       "done_means": "module 1 logged; exam window = late Nov (book in B1).",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "aws"
+      ]
     },
     {
       "seed_key": "W2:reproduce-a-real-bug",
@@ -593,7 +733,10 @@
         "Comment on the issue with the repro + \"happy to fix if maintainers agree with direction\"."
       ],
       "done_means": "your repro comment is posted.",
-      "sort_order": 400
+      "sort_order": 400,
+      "skills": [
+        "oss"
+      ]
     },
     {
       "seed_key": "W3:stability-cost-latency-metrics",
@@ -606,7 +749,10 @@
         "Record tokens + latency per call; compute € per summary from provider pricing."
       ],
       "done_means": "results file has stability, cost, latency columns.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "evals"
+      ]
     },
     {
       "seed_key": "W3:regression-gate-in-ci",
@@ -619,7 +765,11 @@
         "Prove it: break the prompt on a branch → CI red; revert → green."
       ],
       "done_means": "you watched CI fail on a bad prompt.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "evals",
+        "tooling"
+      ]
     },
     {
       "seed_key": "W3:the-sentence",
@@ -631,7 +781,11 @@
         "Put it at the top of the README + CV draft; log it (📊)."
       ],
       "done_means": "sentence written with real X and Y.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "evals",
+        "career"
+      ]
     },
     {
       "seed_key": "W4:medium-1",
@@ -644,7 +798,10 @@
         "Publish; log it (✍️)."
       ],
       "done_means": "live URL.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "writing"
+      ]
     },
     {
       "seed_key": "W4:prometheus-grafana",
@@ -658,7 +815,10 @@
         "Build one dashboard: latency p50/95/99, slots, dependency health. Export its JSON into the repo."
       ],
       "done_means": "send test load, watch p99 move on the board.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "observability"
+      ]
     },
     {
       "seed_key": "W4:otel-tracing-on-the-hot-path",
@@ -671,7 +831,10 @@
         "Open one trace showing all 4 spans with timings; screenshot to `docs/`."
       ],
       "done_means": "screenshot saved.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "observability"
+      ]
     },
     {
       "seed_key": "W4:vllm-serving-a-small-model",
@@ -685,7 +848,10 @@
         "Save the exact launch command + model name in `docs/`."
       ],
       "done_means": "curl returns a streamed completion.",
-      "sort_order": 400
+      "sort_order": 400,
+      "skills": [
+        "serving"
+      ]
     },
     {
       "seed_key": "W4:pr-1-cv-line",
@@ -698,7 +864,10 @@
         "Add the eval-harness line to the CV."
       ],
       "done_means": "PR open with green CI.",
-      "sort_order": 500
+      "sort_order": 500,
+      "skills": [
+        "oss"
+      ]
     },
     {
       "seed_key": "W5:k6-mixed-load-baseline",
@@ -710,7 +879,10 @@
         "Run 10 min; save Grafana snapshot of p50/95/99 + error rate to `docs/reliability/baseline.png`."
       ],
       "done_means": "baseline graphs saved.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "chaos"
+      ]
     },
     {
       "seed_key": "W5:kill-redis-mid-load-fail-open",
@@ -724,7 +896,10 @@
         "Save annotated graph."
       ],
       "done_means": "graph shows flat traffic through the outage.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "chaos"
+      ]
     },
     {
       "seed_key": "W5:kill-jwks-mid-load-fail-static",
@@ -738,7 +913,11 @@
         "Save annotated graph."
       ],
       "done_means": "graph + staleness evidence in `docs/reliability/`.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "chaos",
+        "security"
+      ]
     },
     {
       "seed_key": "W6:slot-starvation",
@@ -751,7 +930,10 @@
         "Write 5 lines: what slots showed that rate limiting alone never would."
       ],
       "done_means": "starvation graph + notes committed.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "chaos"
+      ]
     },
     {
       "seed_key": "W6:vllm-wired-as-a-provider",
@@ -764,7 +946,10 @@
         "Confirm metrics/traces carry `provider=vllm`."
       ],
       "done_means": "proxied completion visible in Grafana.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "serving"
+      ]
     },
     {
       "seed_key": "W6:failover-lands-on-vllm",
@@ -778,7 +963,11 @@
         "Assert the response names the model that actually answered."
       ],
       "done_means": "failover latency number + model-attribution proof saved.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "chaos",
+        "serving"
+      ]
     },
     {
       "seed_key": "W7:pprof-find-and-fix-one-bottleneck",
@@ -792,7 +981,10 @@
         "Prove: `go test -bench` before/after + k6 p50/95/99 before/after."
       ],
       "done_means": "before/after table committed.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "go-perf"
+      ]
     },
     {
       "seed_key": "W7:reliability-md",
@@ -804,7 +996,11 @@
         "Add a \"what surprised me\" line per section. Nothing surprised you? Re-run harder."
       ],
       "done_means": "merged with 5 graphs.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "chaos",
+        "writing"
+      ]
     },
     {
       "seed_key": "W7:medium-2-honest-cv-numbers",
@@ -816,7 +1012,10 @@
         "Replace \"~750 msg/s local\" on the CV with 2–3 measured numbers (p99 under mixed load, failover latency)."
       ],
       "done_means": "live URL + CV updated.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "writing"
+      ]
     },
     {
       "seed_key": "W8:batching-token-streaming",
@@ -829,7 +1028,10 @@
         "Add a TTFT (time-to-first-token) metric."
       ],
       "done_means": "`curl -N` through the gateway streams; TTFT on the dashboard.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "serving"
+      ]
     },
     {
       "seed_key": "W8:bake-off-table",
@@ -843,7 +1045,10 @@
         "Commit `docs/serving-bakeoff.md`."
       ],
       "done_means": "table with ≥3 fully measured rows.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "serving"
+      ]
     },
     {
       "seed_key": "W9:terraform-module-1-cloud-postgres",
@@ -857,7 +1062,10 @@
         "Prove reproducibility: `terraform destroy \u0026\u0026 terraform apply`, connect again."
       ],
       "done_means": "DB rebuilt from zero by two commands.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "terraform"
+      ]
     },
     {
       "seed_key": "W9:postgres-behind-sqlc-pool-migrations",
@@ -871,7 +1079,10 @@
         "Run the full test suite against the cloud DB."
       ],
       "done_means": "tests green on Postgres; pool reasoning written down.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "postgres"
+      ]
     },
     {
       "seed_key": "W9:follow-up",
@@ -883,7 +1094,10 @@
         "Bookmark issue #2 in the same repo."
       ],
       "done_means": "PR moved or ping sent; issue #2 identified.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "oss"
+      ]
     },
     {
       "seed_key": "W10:explain-index-explain",
@@ -896,7 +1110,10 @@
         "Add the index it asks for via a goose migration; re-run; save the after."
       ],
       "done_means": "before/after plans committed with the timing delta.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "postgres"
+      ]
     },
     {
       "seed_key": "W10:isolation-level-chosen-on-purpose",
@@ -909,7 +1126,10 @@
         "Add one test demonstrating the anomaly you're preventing (or knowingly accepting)."
       ],
       "done_means": "explicit level in code + written justification + test.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "postgres"
+      ]
     },
     {
       "seed_key": "W10:the-honest-number",
@@ -921,7 +1141,11 @@
         "Publish it in the README next to the retired 750, with one sentence of context. Log it (📊)."
       ],
       "done_means": "new number public, even if it's worse.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "postgres",
+        "chaos"
+      ]
     },
     {
       "seed_key": "W10:pgvector-top-k",
@@ -935,7 +1159,10 @@
         "Add an HNSW index; measure query latency before/after."
       ],
       "done_means": "endpoint returns sane neighbors; latency recorded.",
-      "sort_order": 400
+      "sort_order": 400,
+      "skills": [
+        "retrieval"
+      ]
     },
     {
       "seed_key": "W10:postgres-internals-reading",
@@ -947,7 +1174,10 @@
         "Write 5 bullets: which of these synapsePlatform will need, and when."
       ],
       "done_means": "notes in the log.",
-      "sort_order": 500
+      "sort_order": 500,
+      "skills": [
+        "postgres"
+      ]
     },
     {
       "seed_key": "W11:dataset-curated",
@@ -960,7 +1190,10 @@
         "Freeze val. Never train on the golden set — that's the test."
       ],
       "done_means": "`train.jsonl` + `val.jsonl` with counts recorded.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "finetuning"
+      ]
     },
     {
       "seed_key": "W11:lora-fine-tune-quantize",
@@ -974,7 +1207,10 @@
         "Save artifacts + exact configs to `ml/models/` registry notes."
       ],
       "done_means": "quantized model + training config saved.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "finetuning"
+      ]
     },
     {
       "seed_key": "W11:serve-tuned-model-eval-vs-base",
@@ -987,7 +1223,12 @@
         "Write the true verdict: \"tuned = X% rejection at Y% of the cost\" — whatever the numbers say."
       ],
       "done_means": "eval table committed; verdict logged (📊).",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "finetuning",
+        "serving",
+        "evals"
+      ]
     },
     {
       "seed_key": "W11:saa-practice-exam-1",
@@ -999,7 +1240,10 @@
         "Log the score; list 3 weakest domains; queue those modules."
       ],
       "done_means": "score logged.",
-      "sort_order": 400
+      "sort_order": 400,
+      "skills": [
+        "aws"
+      ]
     },
     {
       "seed_key": "W12:checkpoint-mon-nov-9-45-min",
@@ -1011,7 +1255,10 @@
         "Any bad answer → adjust B1 scope immediately."
       ],
       "done_means": "written answers exist.",
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "career"
+      ]
     },
     {
       "seed_key": "W12:terraform-full-stack-infra",
@@ -1025,7 +1272,10 @@
         "`infra/README.md`: the one-command bring-up."
       ],
       "done_means": "fresh environment reachable end-to-end from zero.",
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "terraform"
+      ]
     },
     {
       "seed_key": "W12:security-pass",
@@ -1038,7 +1288,10 @@
         "30-min OWASP top-10 walk of the gateway: authz on every route, input size limits, no error leakage."
       ],
       "done_means": "`docs/security.md` with clean-or-triaged reports.",
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "security"
+      ]
     },
     {
       "seed_key": "W12:polish-conference",
@@ -1051,7 +1304,11 @@
         "[career] Book the conference ticket."
       ],
       "done_means": "a stranger gets the story in 2 minutes per repo; ticket booked.",
-      "sort_order": 400
+      "sort_order": 400,
+      "skills": [
+        "career",
+        "writing"
+      ]
     },
     {
       "seed_key": "W12:cv-10-applications",
@@ -1064,7 +1321,10 @@
         "List 15 target companies (AI infra / LLM infra / Go platform); tailor and send 10; log each (📮)."
       ],
       "done_means": "10 applications logged in the dashboard.",
-      "sort_order": 500
+      "sort_order": 500,
+      "skills": [
+        "career"
+      ]
     },
     {
       "seed_key": "B1:sit-the-saa-g6",
@@ -1072,10 +1332,13 @@
       "title": "Sit the SAA (G6)",
       "project": "learn",
       "steps": [
-        "1. practice exam #2 → 2. book + sit → 3. log (🎓). **Done =** pass."
+        "1. practice exam #2 → 2. book + sit → 3. log (🎓)."
       ],
-      "done_means": null,
-      "sort_order": 100
+      "done_means": "pass.",
+      "sort_order": 100,
+      "skills": [
+        "aws"
+      ]
     },
     {
       "seed_key": "B1:k8s-on-kind-g5",
@@ -1083,10 +1346,13 @@
       "title": "K8s on kind (G5)",
       "project": "synapse",
       "steps": [
-        "1. `kind create cluster` → 2. Deployments + Services + liveness/readiness probes in `deploy/` → 3. HPA on CPU + load until it scales. **Done =** you watched a scaling event."
+        "1. `kind create cluster` → 2. Deployments + Services + liveness/readiness probes in `deploy/` → 3. HPA on CPU + load until it scales."
       ],
-      "done_means": null,
-      "sort_order": 200
+      "done_means": "you watched a scaling event.",
+      "sort_order": 200,
+      "skills": [
+        "k8s"
+      ]
     },
     {
       "seed_key": "B1:eval-regression-alerts-g13",
@@ -1094,10 +1360,14 @@
       "title": "Eval regression alerts (G13)",
       "project": "synapse",
       "steps": [
-        "1. pick W\u0026B (free tier) or MLflow → 2. log every eval run (params + metrics) → 3. nightly GitHub Action runs eval, alerts on regression → 4. test the alert once on purpose. **Done =** one real alert received."
+        "1. pick W\u0026B (free tier) or MLflow → 2. log every eval run (params + metrics) → 3. nightly GitHub Action runs eval, alerts on regression → 4. test the alert once on purpose."
       ],
-      "done_means": null,
-      "sort_order": 300
+      "done_means": "one real alert received.",
+      "sort_order": 300,
+      "skills": [
+        "evals",
+        "observability"
+      ]
     },
     {
       "seed_key": "B1:medium-3",
@@ -1105,10 +1375,13 @@
       "title": "Medium #3",
       "project": "write",
       "steps": [
-        "the W11 table becomes \"fine-tuning vs prompting, measured.\" **Done =** live URL (✍️)."
+        "the W11 table becomes \"fine-tuning vs prompting, measured.\""
       ],
-      "done_means": null,
-      "sort_order": 400
+      "done_means": "live URL (✍️).",
+      "sort_order": 400,
+      "skills": [
+        "writing"
+      ]
     },
     {
       "seed_key": "B1:udemy-llm-course-starts-in-the-thursday-slot",
@@ -1117,7 +1390,10 @@
       "project": "learn",
       "steps": [],
       "done_means": null,
-      "sort_order": 500
+      "sort_order": 500,
+      "skills": [
+        "serving"
+      ]
     },
     {
       "seed_key": "B2:dlq-retries",
@@ -1125,10 +1401,13 @@
       "title": "DLQ + retries",
       "project": "synapse",
       "steps": [
-        "1. create `\u003ctopic\u003e.dlq` → 2. consumer: N retries with backoff, then publish to DLQ with error headers → 3. small CLI to inspect + replay. **Done =** a poison message lands in DLQ and replays clean."
+        "1. create `\u003ctopic\u003e.dlq` → 2. consumer: N retries with backoff, then publish to DLQ with error headers → 3. small CLI to inspect + replay."
       ],
-      "done_means": null,
-      "sort_order": 100
+      "done_means": "a poison message lands in DLQ and replays clean.",
+      "sort_order": 100,
+      "skills": [
+        "distsys"
+      ]
     },
     {
       "seed_key": "B2:idempotency",
@@ -1136,10 +1415,13 @@
       "title": "Idempotency",
       "project": "synapse",
       "steps": [
-        "1. event UUID + unique constraint / processed table → 2. test: duplicate delivery causes exactly one effect. **Done =** test proves it."
+        "1. event UUID + unique constraint / processed table → 2. test: duplicate delivery causes exactly one effect."
       ],
-      "done_means": null,
-      "sort_order": 200
+      "done_means": "test proves it.",
+      "sort_order": 200,
+      "skills": [
+        "distsys"
+      ]
     },
     {
       "seed_key": "B2:backpressure",
@@ -1147,10 +1429,13 @@
       "title": "Backpressure",
       "project": "synapse",
       "steps": [
-        "1. bound in-flight work (worker pool; pause/resume consumer on depth) → 2. slow the DB on purpose: lag grows, memory stays flat. **Done =** the graph shows exactly that."
+        "1. bound in-flight work (worker pool; pause/resume consumer on depth) → 2. slow the DB on purpose: lag grows, memory stays flat."
       ],
-      "done_means": null,
-      "sort_order": 300
+      "done_means": "the graph shows exactly that.",
+      "sort_order": 300,
+      "skills": [
+        "distsys"
+      ]
     },
     {
       "seed_key": "B3:result-caching",
@@ -1158,10 +1443,13 @@
       "title": "Result caching",
       "project": "gateway",
       "steps": [
-        "Redis cache keyed by the existing cache key, TTL configurable; hit-rate metric; tune \u003e60% on replayed traffic. **Done =** panel shows \u003e60%."
+        "Redis cache keyed by the existing cache key, TTL configurable; hit-rate metric; tune \u003e60% on replayed traffic."
       ],
-      "done_means": null,
-      "sort_order": 100
+      "done_means": "panel shows \u003e60%.",
+      "sort_order": 100,
+      "skills": [
+        "serving"
+      ]
     },
     {
       "seed_key": "B3:hardening",
@@ -1169,10 +1457,13 @@
       "title": "Hardening",
       "project": "gateway",
       "steps": [
-        "timeouts on every outbound call; retry+jitter where idempotent; cost budget alert. **Done =** grep finds no call without a deadline."
+        "timeouts on every outbound call; retry+jitter where idempotent; cost budget alert."
       ],
-      "done_means": null,
-      "sort_order": 200
+      "done_means": "grep finds no call without a deadline.",
+      "sort_order": 200,
+      "skills": [
+        "distsys"
+      ]
     },
     {
       "seed_key": "B3:per-key-quotas",
@@ -1180,10 +1471,13 @@
       "title": "Per-key quotas",
       "project": "gateway",
       "steps": [
-        "quota table + middleware + 429 with headers. **Done =** k6 proves the cap."
+        "quota table + middleware + 429 with headers."
       ],
-      "done_means": null,
-      "sort_order": 300
+      "done_means": "k6 proves the cap.",
+      "sort_order": 300,
+      "skills": [
+        "security"
+      ]
     },
     {
       "seed_key": "B4:udemy-modules-finish-ddia-buffer-rest-counts-as-progress-this-block",
@@ -1192,7 +1486,11 @@
       "project": "learn",
       "steps": [],
       "done_means": null,
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "serving",
+        "distsys"
+      ]
     },
     {
       "seed_key": "B5:per-tenant-cost-dashboard",
@@ -1200,10 +1498,13 @@
       "title": "Per-tenant cost dashboard",
       "project": "gateway",
       "steps": [
-        "tokens × price per key → Grafana panel. **Done =** top-3 spenders visible."
+        "tokens × price per key → Grafana panel."
       ],
-      "done_means": null,
-      "sort_order": 100
+      "done_means": "top-3 spenders visible.",
+      "sort_order": 100,
+      "skills": [
+        "observability"
+      ]
     },
     {
       "seed_key": "B5:gpu-basics",
@@ -1211,10 +1512,13 @@
       "title": "GPU basics",
       "project": "learn",
       "steps": [
-        "read one serving-GPU primer; profile vLLM GPU util during a bake-off rerun. **Done =** 5-bullet notes."
+        "read one serving-GPU primer; profile vLLM GPU util during a bake-off rerun."
       ],
-      "done_means": null,
-      "sort_order": 200
+      "done_means": "5-bullet notes.",
+      "sort_order": 200,
+      "skills": [
+        "serving"
+      ]
     },
     {
       "seed_key": "B5:system-design-drills-2-multi-region-inference",
@@ -1223,7 +1527,10 @@
       "project": "learn",
       "steps": [],
       "done_means": null,
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "distsys"
+      ]
     },
     {
       "seed_key": "B6:pr-2-g7",
@@ -1231,10 +1538,13 @@
       "title": "PR #2 (G7)",
       "project": "oss",
       "steps": [
-        "implement → open → shepherd to merge. **Done =** merged, because one can be luck."
+        "implement → open → shepherd to merge."
       ],
-      "done_means": null,
-      "sort_order": 100
+      "done_means": "merged, because one can be luck.",
+      "sort_order": 100,
+      "skills": [
+        "oss"
+      ]
     },
     {
       "seed_key": "B6:oauth-oidc-g15",
@@ -1242,10 +1552,13 @@
       "title": "OAuth/OIDC (G15)",
       "project": "gateway",
       "steps": [
-        "client-credentials flow via a Keycloak container; retire static-key path behind a flag; OWASP recheck. **Done =** token-based auth works end to end."
+        "client-credentials flow via a Keycloak container; retire static-key path behind a flag; OWASP recheck."
       ],
-      "done_means": null,
-      "sort_order": 200
+      "done_means": "token-based auth works end to end.",
+      "sort_order": 200,
+      "skills": [
+        "security"
+      ]
     },
     {
       "seed_key": "B6:conference-g16",
@@ -1256,7 +1569,10 @@
         "goal = 5 real conversations, 3 follow-ups within 48h (🤝)."
       ],
       "done_means": null,
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "career"
+      ]
     },
     {
       "seed_key": "B7:10-more-applications-2-mock-interviews",
@@ -1265,7 +1581,10 @@
       "project": "career",
       "steps": [],
       "done_means": null,
-      "sort_order": 100
+      "sort_order": 100,
+      "skills": [
+        "career"
+      ]
     },
     {
       "seed_key": "B7:tag-v0-3-write-case-study-post",
@@ -1274,7 +1593,10 @@
       "project": "synapse",
       "steps": [],
       "done_means": null,
-      "sort_order": 200
+      "sort_order": 200,
+      "skills": [
+        "writing"
+      ]
     },
     {
       "seed_key": "B7:checkpoint-feb-21",
@@ -1285,7 +1607,10 @@
         "written review, same 5-question format."
       ],
       "done_means": null,
-      "sort_order": 300
+      "sort_order": 300,
+      "skills": [
+        "career"
+      ]
     }
   ],
   "checkpoints": [
@@ -1297,6 +1622,13 @@
         "PR merged or stale?",
         "fourth repo?",
         "still AI-infra path?"
+      ],
+      "helpers": [
+        "Good = the exact sentence you'd say out loud, with real X and Y. Not yet = name the one missing piece.",
+        "Name the belief that died. Nothing surprised you = you tested too gently — schedule the harder rerun before answering.",
+        "Status + date of last maintainer contact + your next move.",
+        "Yes/no. If yes: which one gets archived this week.",
+        "Gut check, one paragraph max. Re-decide, don't re-litigate."
       ]
     },
     {
@@ -1307,7 +1639,152 @@
         "PR merged or stale?",
         "fourth repo?",
         "still AI-infra path?"
+      ],
+      "helpers": [
+        "Good = the exact sentence you'd say out loud, with real X and Y. Not yet = name the one missing piece.",
+        "Name the belief that died. Nothing surprised you = you tested too gently — schedule the harder rerun before answering.",
+        "Status + date of last maintainer contact + your next move.",
+        "Yes/no. If yes: which one gets archived this week.",
+        "Gut check, one paragraph max. Re-decide, don't re-litigate."
       ]
+    }
+  ],
+  "skills": [
+    {
+      "code": "evals",
+      "name": "Evaluation systems",
+      "description": "Measuring LLM output quality: golden sets, rejection/coverage/stability metrics, regression gates.",
+      "associate_when": "the task creates, runs, or gates on an evaluation.",
+      "target_tier": "Expert",
+      "sort_order": 10
+    },
+    {
+      "code": "go-perf",
+      "name": "Go performance",
+      "description": "pprof, allocation discipline, benchmarks, hot-path fixes.",
+      "associate_when": "the task profiles, optimises, or benchmarks Go code.",
+      "target_tier": "Expert",
+      "sort_order": 20
+    },
+    {
+      "code": "chaos",
+      "name": "Load \u0026 chaos testing",
+      "description": "k6/vegeta, dependency-kill experiments, proving failure modes.",
+      "associate_when": "the task generates load, or breaks something on purpose to observe behaviour.",
+      "target_tier": "Expert",
+      "sort_order": 30
+    },
+    {
+      "code": "observability",
+      "name": "Observability",
+      "description": "Prometheus, Grafana, OTel traces, dashboards, alerting.",
+      "associate_when": "the task adds or reads metrics, traces, or dashboards.",
+      "target_tier": "Expert",
+      "sort_order": 40
+    },
+    {
+      "code": "serving",
+      "name": "LLM serving",
+      "description": "vLLM, batching, token streaming, TTFT, provider wiring, bake-offs.",
+      "associate_when": "the task runs, routes to, or measures a model server.",
+      "target_tier": "Expert",
+      "sort_order": 50
+    },
+    {
+      "code": "finetuning",
+      "name": "Fine-tuning \u0026 quantization",
+      "description": "Dataset curation, LoRA, AWQ/GGUF, tuned-vs-base verdicts.",
+      "associate_when": "the task prepares data for, trains, or compresses a model.",
+      "target_tier": "Practitioner",
+      "sort_order": 60
+    },
+    {
+      "code": "postgres",
+      "name": "Postgres internals",
+      "description": "pgxpool, isolation levels, EXPLAIN, indexes, migrations, vacuum.",
+      "associate_when": "the task touches the relational layer below the ORM line.",
+      "target_tier": "Expert",
+      "sort_order": 70
+    },
+    {
+      "code": "retrieval",
+      "name": "Retrieval \u0026 pgvector",
+      "description": "Embeddings, top-k search, HNSW, retrieval latency.",
+      "associate_when": "the task stores or queries vectors.",
+      "target_tier": "Practitioner",
+      "sort_order": 80
+    },
+    {
+      "code": "distsys",
+      "name": "Distributed systems",
+      "description": "DDIA theory, and Kafka in practice: DLQ, retries, backpressure, idempotency, consistency.",
+      "associate_when": "the task deals with partial failure between processes.",
+      "target_tier": null,
+      "sort_order": 90
+    },
+    {
+      "code": "terraform",
+      "name": "Infrastructure as code",
+      "description": "Terraform modules, reproducible environments, destroy/apply proofs.",
+      "associate_when": "the task provisions anything by code instead of by clicking.",
+      "target_tier": "Practitioner",
+      "sort_order": 100
+    },
+    {
+      "code": "k8s",
+      "name": "Kubernetes",
+      "description": "kind, Deployments, probes, HPA, manifests.",
+      "associate_when": "the task runs workloads on a cluster.",
+      "target_tier": "Practitioner",
+      "sort_order": 110
+    },
+    {
+      "code": "aws",
+      "name": "AWS",
+      "description": "SAA preparation and exam, service architecture, IAM.",
+      "associate_when": "the task studies or applies AWS specifics.",
+      "target_tier": "Expert",
+      "sort_order": 120
+    },
+    {
+      "code": "security",
+      "name": "Security engineering",
+      "description": "gosec/govulncheck, secrets hygiene, OWASP, OAuth/OIDC.",
+      "associate_when": "the task finds, fixes, or prevents a vulnerability class.",
+      "target_tier": "Practitioner",
+      "sort_order": 130
+    },
+    {
+      "code": "oss",
+      "name": "Open-source collaboration",
+      "description": "Working in codebases you don't own: repros, PRs, review etiquette, maintainer time.",
+      "associate_when": "the task touches the chosen external repo.",
+      "target_tier": null,
+      "sort_order": 140
+    },
+    {
+      "code": "writing",
+      "name": "Technical writing",
+      "description": "Medium posts, RELIABILITY.md-grade docs, case studies.",
+      "associate_when": "the task produces prose a stranger will read.",
+      "target_tier": null,
+      "sort_order": 150
+    },
+    {
+      "code": "career",
+      "name": "Career ops",
+      "description": "CV, LinkedIn, applications, interviews, networking, checkpoints.",
+      "associate_when": "the task advances the job search rather than the codebase.",
+      "target_tier": null,
+      "sort_order": 160
+    },
+    {
+      "code": "tooling",
+      "name": "Internal tooling \u0026 DX",
+      "description": "Building tools that make the rest of the work faster — this dashboard included.",
+      "associate_when": "the task improves your own workflow with software.",
+      "target_tier": null,
+      "sort_order": 170
     }
   ]
 }

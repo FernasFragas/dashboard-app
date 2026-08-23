@@ -1,7 +1,7 @@
 // Command seedgen turns master-plan-v5.md into internal/seed/seed.json.
 //
-// It is a build-time tool, not part of the server binary: the server only ever reads the
-// committed JSON, so a parser bug can never prevent a boot (docs/DATABASE.md section 8).
+// It is a build-time tool for the embedded default seed. The server can also parse a plan at
+// boot with -plan; see docs/DATABASE.md section 8.
 //
 // Usage: seedgen [-year 2026] [-out internal/seed/seed.json] master-plan-v5.md
 package main
@@ -11,6 +11,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/FernasFragas/dashboard-app/internal/plan"
 )
 
 func main() {
@@ -29,11 +31,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	doc, err := Parse(string(source), *year)
+	profile, err := plan.LoadProfileForPlan(flag.Arg(0))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "seedgen: config %s: %v\n", flag.Arg(0), err)
+		os.Exit(1)
+	}
+	profile.Plan.StartYear = *year
+
+	doc, err := plan.ParseWithProfile(string(source), profile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "seedgen: parse %s: %v\n", flag.Arg(0), err)
 		os.Exit(1)
 	}
+	doc.GeneratedFrom = flag.Arg(0)
 
 	encoded, err := json.MarshalIndent(doc, "", "  ")
 	if err != nil {
@@ -57,7 +67,7 @@ func main() {
 	}
 
 	fmt.Fprintf(os.Stderr,
-		"seedgen: %d weeks, %d tasks, %d goals, %d categories, %d metrics, %d checkpoints -> %s\n",
+		"seedgen: %d weeks, %d tasks, %d goals, %d categories, %d metrics, %d checkpoints, %d skills -> %s\n",
 		len(doc.Weeks), len(doc.Tasks), len(doc.Goals), len(doc.Categories),
-		len(doc.MetricDefs), len(doc.Checkpoints), *out)
+		len(doc.MetricDefs), len(doc.Checkpoints), len(doc.Skills), *out)
 }
