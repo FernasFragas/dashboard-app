@@ -86,6 +86,9 @@ Run or configure launchd with that IP:
 Do not bind production to `0.0.0.0`. The security model is the tailnet ACL plus the optional
 `-token`, so the process should listen only on the Tailscale address.
 
+What a tailnet is, what it protects, and what it does not:
+[docs/TAILSCALE.md](docs/TAILSCALE.md).
+
 ## launchd
 
 Copy the built binary and install the template:

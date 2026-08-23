@@ -19,6 +19,15 @@ jobs:
         with:
           go-version: "1.26.x"
 
+      # make check-ci calls golangci-lint; the runner does not ship it. Pinned to the version
+      # used locally, and the install script pinned to the same tag, so CI and a laptop cannot
+      # disagree about what passes.
+      - name: Install golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/v2.4.0/install.sh \
+            | sh -s -- -b "$(go env GOPATH)/bin" v2.4.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -36,4 +45,4 @@ jobs:
         working-directory: web
 
       - name: Check
-        run: make check
+        run: make check-ci

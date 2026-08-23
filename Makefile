@@ -4,7 +4,7 @@ BIN ?= bin/dashboard
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 EMBED_DIST := internal/web/dist
 
-.PHONY: dev build clean-build seed-gen fmt vet lint typecheck test check
+.PHONY: dev build clean-build seed-gen fmt fmt-check vet lint typecheck test check check-ci
 
 dev:
 	@set -euo pipefail; \
@@ -35,6 +35,15 @@ fmt:
 	gofmt -w cmd internal
 	cd web && pnpm format
 
+# Verify formatting instead of applying it. CI must not rewrite files: `fmt` would silently
+# reformat and then pass, so unformatted code would never fail a build.
+fmt-check:
+	@unformatted="$$(gofmt -l cmd internal)"; \
+	if [ -n "$$unformatted" ]; then \
+		echo "gofmt needed:"; echo "$$unformatted"; exit 1; \
+	fi
+	cd web && pnpm format:check
+
 vet:
 	go vet ./...
 
@@ -50,3 +59,6 @@ test:
 	cd web && pnpm test
 
 check: fmt vet lint typecheck test
+
+# What CI runs. Same checks, but it verifies formatting rather than fixing it.
+check-ci: fmt-check vet lint typecheck test
