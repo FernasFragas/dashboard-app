@@ -7,6 +7,11 @@
 | **Author** | @FernasFragas |
 | **Related** | ADR-001, ADR-005, ADR-006, docs/ARCHITECTURE.md §2 |
 
+> **Amended 2026-09-16.** The pure derived functions ended up in `internal/api/time.go` (plan week,
+> streak) and `internal/store/game.go` (levels, tiers); `internal/plan` became the markdown plan
+> parser in M10. The decision and its rules are unchanged. The import boundaries are now enforced
+> by `depguard` in `.golangci.yml`.
+
 ## 1. Context and Problem Statement
 
 The app is roughly twelve HTTP endpoints over ten SQLite tables, with three derived values

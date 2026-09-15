@@ -14,7 +14,7 @@ Schema for every entity: [DATABASE.md](DATABASE.md). Layering rules: [ARCHITECTU
   response except `204`.
 - **Timestamps in and out:** RFC3339 UTC (`2026-08-22T14:03:00Z`). Dates: `YYYY-MM-DD`, always
   a `Europe/Lisbon` calendar date.
-- **Unknown query parameters are rejected** with `400`, not ignored. A typo'd filter that
+- **Unknown query parameters on `GET` endpoints are rejected** with `400`, not ignored. A typo'd filter that
   silently returns everything is worse than an error.
 - **Unknown JSON fields are rejected** with `400` (`DisallowUnknownFields`).
 - **Plan vocabulary is data.** Project, phase, category and skill-tier values come from the
@@ -133,10 +133,12 @@ No `game` field means the write was successful but caused no new XP, level-up, o
 | `GET /pair/{code}`            | Redeem a one-use pairing code. Exempt from token check.             |
 | `GET /api/dashboard`          | Today bundle: plan week, rhythm slot, week tasks, counters, streak. |
 | `GET /api/goals`              | List, optionally filtered by status or project.                     |
+| `GET /api/goals/{id}`         | One goal, with its `ETag`.                                          |
 | `POST /api/goals`             | Create.                                                             |
 | `PATCH /api/goals/{id}`       | Move column / reorder / edit. Requires `If-Match`.                  |
 | `DELETE /api/goals/{id}`      | Delete. Linked tasks and logs survive with `goal_id` nulled.        |
 | `GET /api/tasks`              | Week list, filterable by week and project.                          |
+| `GET /api/tasks/{id}`         | One task, with its `ETag`.                                          |
 | `POST /api/tasks`             | Add an ad-hoc task.                                                 |
 | `PATCH /api/tasks/{id}`       | Toggle done / edit. Requires `If-Match`.                            |
 | `DELETE /api/tasks/{id}`      | Delete a hand-created task.                                         |
@@ -273,7 +275,12 @@ Every listed project must exist in `GET /api/projects`.
 ```json
 {
   "today": "2026-09-24",
-  "task_week": "W5",
+  "task_week": {
+    "code": "W5",
+    "start_date": "2026-09-21",
+    "end_date": "2026-09-27",
+    "focus": "Chaos: fail-open / fail-static"
+  },
   "week": {
     "code": "W5",
     "phase": "P1",
@@ -329,7 +336,7 @@ Every listed project must exist in `GET /api/projects`.
 | --------------- | ------------------------------- | ---------------------- |
 | `not_started`   | before `W1` starts (2026-08-24) | `null`                 |
 | `active`        | inside a `W`/`B` window         | populated              |
-| `plan_complete` | after `B7` ends (2027-02-21)    | `null`                 |
+| `plan_complete` | after `B7` ends (2027-03-21)    | `null`                 |
 
 The screen stays fully usable in every state; only the banner disappears. In `plan_complete`,
 `tasks` carries the last block's list.
@@ -338,7 +345,7 @@ The screen stays fully usable in every state; only the banner disappears. In `pl
 week when there is one, the first week before the plan starts, the last week after it ends. It
 is `null` only when the plan has no weeks at all.
 
-Clients that need a week to *write* to — the add-task sheet — must use `task_week`, not
+Clients that need a week to *write* to — the add-task sheet — must use `task_week.code`, not
 `week.code`. Using `week.code` leaves the UI unable to add a task outside the plan window, which
 is precisely when the screen is still showing a perfectly good task list.
 
@@ -394,6 +401,11 @@ ADR-004's rule that handlers hold no policy beyond validation.
 `201`, `Location: /api/goals/19`, body is the created goal. `title` and `project` required;
 `project` must exist in the loaded plan's project vocabulary. `status` defaults to `backlog`.
 `code` cannot be set — it belongs to seeded goals only.
+
+### `GET /api/goals/{id}`
+
+`200` + the goal, same shape as in `GET /api/goals`, with `ETag: W/"<id>-<version>"`. `404` for
+an unknown id. Read it before a `PATCH` when the client's copy may be stale.
 
 ### `PATCH /api/goals/{id}`
 
@@ -495,6 +507,11 @@ malformed reference rather than a policy refusal.
 `201` + the created task. `week`, `title`, `project` required. `week` must exist in `weeks`.
 `project` must exist in the loaded plan's project vocabulary. `steps` defaults to `[]`,
 `seed_key` is always null for API-created tasks.
+
+### `GET /api/tasks/{id}`
+
+`200` + the task, same shape as in `GET /api/tasks`, with `ETag: W/"<id>-<version>"`. `404` for
+an unknown id.
 
 ### `PATCH /api/tasks/{id}`
 
@@ -886,11 +903,11 @@ reference data, not frontend copy, so a new catalogue metric carries its own gui
 
 ### `GET /api/checkpoints/{week}`
 
-`week` is `W12` or `B7`. `404` for any other week.
+`week` is a week with a checkpoint: `W16` or `B7` in the default plan. `404` for any other week.
 
 ```json
 {
-  "week": "W12",
+  "week": "W16",
   "questions": [
     "interview-grade eval number?",
     "chaos falsified anything?",
@@ -944,9 +961,10 @@ Content-Disposition: attachment; filename="dashboard-export-20260924.json"
 ```json
 {
   "exported_at": "2026-09-24T21:00:00Z",
-  "schema_version": 6,
+  "schema_version": 8,
   "plan_meta": [],
   "plan_config": [],
+  "plan_sources": [],
   "projects": [],
   "phases": [],
   "skill_tiers": [],
@@ -971,7 +989,8 @@ Content-Disposition: attachment; filename="dashboard-export-20260924.json"
 }
 ```
 
-Every current table from DATABASE.md §4, complete and unpaginated. This is the insurance
+Every table from DATABASE.md §4 except `pairing_codes` (ephemeral one-time secrets), complete and
+unpaginated; `schema_migrations` appears as `schema_version`. This is the insurance
 policy; restore is manual and out of scope for v1.
 
 ---

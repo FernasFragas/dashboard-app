@@ -141,8 +141,11 @@ Run the full project check from the repo root:
 make check
 ```
 
-This runs formatting, Go vet, golangci-lint, frontend linting, TypeScript checking, Go tests, and
-Vitest.
+This runs formatting, Go vet, golangci-lint, frontend linting, TypeScript checking, Go tests,
+Vitest, the documentation link check and the applied-migration check.
+
+To run a second, isolated copy of the app (free ports, throwaway database, logs on disk), use
+`make dev-instance`.
 
 For frontend-only checks:
 

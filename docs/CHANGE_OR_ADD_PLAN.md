@@ -1,6 +1,8 @@
 # Change Or Add A Plan
 
 Use this when you want to edit the current roadmap or run the app with a different one.
+When something goes wrong — a validation error, a failed boot, or a dashboard that seeded
+the wrong thing — see `PLAN_CHANGE_RUNBOOK.md`.
 
 ## Change The Default Plan
 

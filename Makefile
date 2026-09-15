@@ -3,8 +3,18 @@ SHELL := /bin/bash
 BIN ?= bin/dashboard
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 EMBED_DIST := internal/web/dist
+# Commit that check-migrations compares against. CI passes the PR base or the pre-push commit.
+MIGRATION_BASE ?= origin/main
 
-.PHONY: dev build clean-build seed-gen fmt fmt-check vet lint typecheck test check check-ci
+.PHONY: setup doctor dev dev-instance build clean-build seed-gen fmt fmt-check vet lint typecheck \
+	test check-docs check-migrations check check-ci
+
+# First run after cloning: verify the toolchain, then install frontend dependencies.
+setup: doctor
+	cd web && pnpm install --frozen-lockfile
+
+doctor:
+	@scripts/doctor.sh
 
 dev:
 	@set -euo pipefail; \
@@ -13,6 +23,11 @@ dev:
 	(go run ./cmd/server 2>&1 | prefix go) & \
 	(cd web && pnpm dev 2>&1 | prefix vite) & \
 	wait
+
+# An isolated instance: free ports, throwaway database, logs on disk. Safe beside make dev and
+# beside other instances, so parallel agents and worktrees can each run one.
+dev-instance:
+	@scripts/dev-instance.sh
 
 build:
 	cd web && pnpm build
@@ -58,7 +73,15 @@ test:
 	go test ./...
 	cd web && pnpm test
 
-check: fmt vet lint typecheck test
+# Every relative link and repository path mentioned in the markdown docs must still resolve.
+check-docs:
+	go run ./cmd/doccheck .
+
+# Applied migrations are immutable (docs/DATABASE.md §7).
+check-migrations:
+	@scripts/check-migrations-immutable.sh "$(MIGRATION_BASE)"
+
+check: fmt vet lint typecheck test check-docs check-migrations
 
 # What CI runs. Same checks, but it verifies formatting rather than fixing it.
-check-ci: fmt-check vet lint typecheck test
+check-ci: fmt-check vet lint typecheck test check-docs check-migrations

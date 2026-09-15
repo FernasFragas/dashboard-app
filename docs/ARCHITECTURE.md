@@ -5,7 +5,8 @@ file, reached from a laptop and a phone over Tailscale.
 
 **Companion documents:** [DATABASE.md](DATABASE.md) (schema, the source of migrations) ·
 [API.md](API.md) (endpoint contract) · [PLAN-FORMAT.md](PLAN-FORMAT.md) (custom plan format) ·
-[RUN_LOCALLY.md](RUN_LOCALLY.md) (local setup) · [adr/](adr/) (why each choice was made).
+[RUN_LOCALLY.md](RUN_LOCALLY.md) (local setup) · [adr/](adr/README.md) (why each choice was made) ·
+[CODEMAP.md](CODEMAP.md) (where each concern lives in the code).
 
 ---
 
@@ -21,7 +22,6 @@ file, reached from a laptop and a phone over Tailscale.
 │  one Go binary  (CGO_ENABLED=0)                │
 │                                                │
 │  cmd/server        flags, wiring, lifecycle    │
-│  internal/log      slog handler selection      │
 │  internal/api      middleware chain + handlers │
 │  internal/plan     markdown parser + helpers   │
 │  internal/store    SQLite: migrations + CRUD   │
@@ -39,14 +39,16 @@ file, reached from a laptop and a phone over Tailscale.
 
 | Component | Owns | Must not |
 |---|---|---|
-| `cmd/server` | Flag parsing, dependency wiring, HTTP server lifecycle, graceful shutdown. Fails fast and exits non-zero if migrations, seeding, or the DB open fail. | Contain business logic. |
-| `internal/log` | Building the `*slog.Logger` — text handler when `-log-format=text`, JSON when `json`. | Be imported by `store` or `plan` (ADR-004: no logging below the API layer). |
+| `cmd/server` | Flag parsing, building the `*slog.Logger` (text or JSON, ADR-006), dependency wiring, HTTP server lifecycle, graceful shutdown. Fails fast and exits non-zero if migrations, seeding, or the DB open fail. | Contain business logic. |
 | `internal/api` | Transport only: decode, validate, call one or more store methods, encode, map errors to status codes. Owns the middleware chain and is the **only** place errors are logged. | Contain SQL, or reach into `database/sql`. |
 | `internal/plan` | Portable plan parsing: markdown sections, optional `plan.yaml`, and validation. | Touch the DB or the logger. |
 | `internal/store` | Opening SQLite, applying migrations, typed CRUD, transactions, optimistic-version checks. Returns wrapped errors and sentinels. | Log. Format anything for HTTP. |
 | `internal/seed` | Holding `seed.json`, and the additive reference-upsert loader that runs at boot. | Delete existing rows or overwrite user progress. |
 | `internal/web` | `go:embed web/dist` and the SPA fallback handler. | Know anything about the API. |
 | `internal/backup` | Nightly `VACUUM INTO` ticker and prune-to-14. | Kill the server when a backup fails. |
+
+The import boundaries in this table are enforced by `depguard` rules in `.golangci.yml`; `make lint`
+reports the broken rule and what to do instead.
 
 `cmd/seedgen` is a separate build-time tool: it parses `master-plan-v5.md` into the committed
 `internal/seed/seed.json` zero-config default. The server can also parse a user-supplied plan
@@ -129,13 +131,13 @@ Failure paths:
 | Go | Single static binary, stdlib HTTP is enough, and it's the language the surrounding portfolio is in. |
 | `modernc.org/sqlite` | Pure Go — `CGO_ENABLED=0` cross-compiles to a home server later without a toolchain (ADR-001). |
 | SQLite, WAL, `busy_timeout=5000` | One user, one writer; zero operations; backup is a file (ADR-001). |
-| stdlib `net/http` ServeMux | Go 1.22+ handles `GET /api/tasks/{id}` and `PathValue`; 12 endpoints don't justify a dependency (ADR-005). |
+| stdlib `net/http` ServeMux | Go 1.22+ handles `GET /api/tasks/{id}` and `PathValue`; a few dozen routes don't justify a dependency (ADR-005). |
 | `log/slog` | Structured logging in the stdlib; text for humans in dev, JSON under launchd (ADR-006). |
 | React 18 + TypeScript + Vite | Fast builds, typed API client, and the ecosystem for drag-and-drop and server state. |
 | Tailwind v4 | CSS-first config; the dark palette is a handful of `@theme` tokens, no JS config file. |
 | TanStack Query | Server state, cache invalidation, and optimistic mutations with rollback — the exact shape of this app's interactions. |
 | dnd-kit | Kanban drag on desktop; mobile uses an explicit tap-to-move menu instead. |
-| wouter | Four routes. A full router would be the largest frontend dependency for the least benefit. |
+| wouter | Six routes. A full router would be the largest frontend dependency for the least benefit. |
 | `go:embed` | One artifact to copy and run; no Node at runtime (ADR-002). |
 | Tailscale ACL + optional `X-Token` | The network is the perimeter; no accounts to build or secure (ADR-003). |
 
@@ -171,7 +173,7 @@ One rule, because getting it wrong corrupts the streak — the app's main feedba
 
 ## 7. Scope boundary
 
-The current architecture covers the v1 tracker through M11 plus M9 gamification. The same rule
+The current architecture covers the v1 tracker through M12 phone pairing, including M9 gamification. The same rule
 holds across both skill tracking and game feedback: store only facts, derive progress. M8 stores
 skill definitions and task/log associations, then derives skill stats at read time. M9 stores XP
 ledger events, rules, and achievement unlock moments, then derives player XP, levels, streaks,

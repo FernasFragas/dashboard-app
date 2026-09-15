@@ -7,7 +7,7 @@ Single-user productivity dashboard. Go API plus a Vite React frontend, one binar
 Install Go 1.26, Node 24 (see `.nvmrc`) and pnpm 11. Then, from the repo root:
 
 ```sh
-cd web && pnpm install && cd ..   # once
+make setup   # once: checks the toolchain, installs frontend dependencies
 make dev
 ```
 
@@ -34,6 +34,10 @@ More detail, including the optional API token and a temporary database:
 Writing or swapping a plan document: [docs/PLAN-FORMAT.md](docs/PLAN-FORMAT.md) ·
 [docs/NEW_PLAN_STRUCTURE.md](docs/NEW_PLAN_STRUCTURE.md) ·
 [docs/CHANGE_OR_ADD_PLAN.md](docs/CHANGE_OR_ADD_PLAN.md).
+When a plan edit fails to validate, fails to boot, or seeds the wrong thing:
+[docs/PLAN_CHANGE_RUNBOOK.md](docs/PLAN_CHANGE_RUNBOOK.md).
+
+Working on the code, yourself or with a coding agent: start at [AGENTS.md](AGENTS.md).
 
 ## Requirements
 
@@ -152,8 +156,9 @@ curl -fsS http://100.x.y.z:8484/api/export > dashboard-export.json
 make check
 ```
 
-`make check` runs Go formatting, vet, golangci-lint, frontend linting, TypeScript checking,
-Vitest, and Go tests.
+`make check` runs Go formatting, vet, golangci-lint (including the layering rules), frontend
+linting, TypeScript checking, Vitest, Go tests, the documentation link check and the
+applied-migration check. `make check-ci` runs the same checks without rewriting files.
 
 ## API Curl Checklist
 

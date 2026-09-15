@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": "http://localhost:8484",
+      // scripts/dev-instance.sh points this at an isolated API on a free port.
+      "/api": process.env.DASHBOARD_API_URL ?? "http://localhost:8484",
     },
   },
 });

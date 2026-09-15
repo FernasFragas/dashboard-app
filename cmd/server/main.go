@@ -174,7 +174,8 @@ func newHTTPHandler(apiHandler http.Handler, webHandler http.Handler) http.Handl
 
 // openStore opens the database, applies migrations, and runs the additive seed loader.
 //
-// The loader is additive-upsert: it inserts what is missing and never updates or deletes, so
+// The loader is an additive reference upsert: it inserts what is missing and refreshes reference
+// data (labels, help text, week windows), but never deletes rows or overwrites user progress, so
 // running it at every boot picks up plan amendments without touching real progress
 // (docs/DATABASE.md section 8).
 func openStore(dataDir string, doc seed.Document) (*store.Store, error) {

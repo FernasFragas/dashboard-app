@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # A weekly run on an unchanged tree surfaces toolchain drift (Go patch releases, runner images)
+  # before it lands on top of an unrelated change.
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
 
 jobs:
   check:
@@ -13,6 +18,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # check-migrations diffs against the PR base or the previous push, so it needs history.
+          fetch-depth: 0
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -47,4 +55,8 @@ jobs:
         working-directory: web
 
       - name: Check
-        run: make check-ci
+        run: make check-ci MIGRATION_BASE="$MIGRATION_BASE"
+        env:
+          # Pull requests compare with their base branch; pushes with the commit before the push.
+          # Scheduled and manual runs have neither, and the migration check skips itself.
+          MIGRATION_BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}

@@ -3,12 +3,71 @@ version: "2"
 linters:
   default: none
   enable:
+    - depguard
     - errcheck
     - govet
     - ineffassign
     - revive
     - staticcheck
   settings:
+    # The layering rules of ADR-004 and docs/ARCHITECTURE.md §1, enforced. Each message says what
+    # to do instead, because the person or agent reading it is mid-change.
+    depguard:
+      rules:
+        store-is-persistence-only:
+          list-mode: lax
+          files:
+            - "**/internal/store/**"
+          deny:
+            - pkg: log
+              desc: "internal/store never logs (ADR-004). Wrap the error with %w and return it; internal/api logs it once."
+            - pkg: net/http
+              desc: "internal/store has no HTTP concepts (ADR-004). Return ErrNotFound, ErrConflict or ErrConstraint; internal/api maps them to status codes."
+            - pkg: github.com/FernasFragas/dashboard-app/internal/api
+              desc: "internal/store is the bottom layer and must not import internal/api (ADR-004)."
+        api-is-transport-only:
+          list-mode: lax
+          files:
+            - "**/internal/api/**"
+            - "!$test"
+          deny:
+            - pkg: database/sql
+              desc: "internal/api is transport only (ADR-004). Add a method to internal/store and call it from the handler."
+            - pkg: modernc.org/sqlite
+              desc: "internal/api is transport only (ADR-004). SQLite access belongs in internal/store."
+        plan-parser-is-pure:
+          list-mode: lax
+          files:
+            - "**/internal/plan/**"
+          deny:
+            - pkg: log
+              desc: "internal/plan never logs (ADR-004). Return an error that carries the line number."
+            - pkg: database/sql
+              desc: "internal/plan only parses markdown into a seed.Document; internal/seed writes it to the database."
+            - pkg: net/http
+              desc: "internal/plan is a pure parser; upload handling lives in internal/api/plan.go."
+            - pkg: github.com/FernasFragas/dashboard-app/internal/store
+              desc: "internal/plan must not depend on the store; return a seed.Document."
+        seed-does-not-log:
+          list-mode: lax
+          files:
+            - "**/internal/seed/**"
+          deny:
+            - pkg: log
+              desc: "internal/seed never logs (ADR-004). Return counts in seed.Result and a wrapped error; the caller logs."
+            - pkg: net/http
+              desc: "internal/seed has no HTTP concepts; internal/api calls seed.Apply and seed.Replace."
+        web-only-serves-the-spa:
+          list-mode: lax
+          files:
+            - "**/internal/web/**"
+          deny:
+            - pkg: github.com/FernasFragas/dashboard-app/internal/api
+              desc: "internal/web only serves the embedded SPA and must not know about the API (docs/ARCHITECTURE.md §1)."
+            - pkg: github.com/FernasFragas/dashboard-app/internal/store
+              desc: "internal/web only serves the embedded SPA and must not touch data (docs/ARCHITECTURE.md §1)."
+            - pkg: database/sql
+              desc: "internal/web only serves the embedded SPA and must not touch data (docs/ARCHITECTURE.md §1)."
     errcheck:
       # (*sql.Rows).Close returns an error that is unactionable and redundant: it is also
       # reported by rows.Err(), which every query loop already checks. Every other Close -

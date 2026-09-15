@@ -9,7 +9,7 @@ truth.** Schema changes start here, then become a migration — never the other 
 > `metric_defs`, `checkpoints`, `projects`, `phases`, `skill_tiers`, and `skills` are all
 > loaded from the plan rather than compiled into the app.
 
-> **Scope boundary.** This schema covers the v1 tracker through M11 plus M9 gamification.
+> **Scope boundary.** This schema covers the v1 tracker through M12 phone pairing, including M9 gamification.
 
 ---
 
@@ -44,7 +44,7 @@ erDiagram
     goals       ||--o{ log_entries  : "SET NULL"
     categories  ||--o{ log_entries  : "RESTRICT"
     metric_defs ||--o{ metrics      : "by name, not enforced"
-    weeks       ||--o| checkpoints  : "W12, B7"
+    weeks       ||--o| checkpoints  : "W16, B7"
     tasks       ||--|{ task_skills  : "CASCADE, >=1"
     skills      ||--o{ task_skills  : "CASCADE"
     skill_tiers ||--o{ skills       : "RESTRICT"
@@ -540,12 +540,13 @@ spelling is enforced by the interface, not the schema, because the escape hatch 
 
 ### 4.16 `checkpoints`
 
-The five-question checkpoint review, at W12 and B7.
+The five-question checkpoint review, at W16 and B7 in the default plan: any week with a task whose
+title contains "Checkpoint".
 
 | Column | Type | Null | Default | Notes |
 |---|---|---|---|---|
 | `id` | INTEGER | no | — | PK. |
-| `week` | TEXT | no | — | `UNIQUE`. FK → `weeks(code)`, `ON DELETE RESTRICT`. `W12`, `B7`. |
+| `week` | TEXT | no | — | `UNIQUE`. FK → `weeks(code)`, `ON DELETE RESTRICT`. `W16`, `B7`. |
 | `questions` | TEXT | no | — | JSON array of 5 strings, seeded. |
 | `helpers` | TEXT | yes | NULL | JSON array, index-aligned with `questions`; same length when present. |
 | `answers` | TEXT | yes | NULL | JSON array, index-aligned with `questions`. |
@@ -729,6 +730,10 @@ is cheap plumbing for a real, if rare, case.
 - Numbered SQL files in `migrations/`: `001_init.sql`, `002_….sql`, …
 - Embedded with `go:embed` and applied at boot, **each inside its own transaction**.
 - **Forward-only.** No down migrations — the recovery path is a backup file.
+- **Immutable once merged.** `scripts/check-migrations-immutable.sh` fails CI when a merged
+  migration is modified or deleted. Fix a mistake with a new migration.
+- **Documented and exported.** `internal/store/schema_contract_test.go` fails when a migrated table
+  has no `### 4.x` section in this document, or is missing from `GET /api/export`.
 - Applied versions are recorded in `schema_migrations`; the runner applies only versions
   greater than the current maximum, so running it twice is a no-op.
 - A migration that fails aborts startup with a non-zero exit. No partial schema.
@@ -805,6 +810,7 @@ retired, not deleted.
 - Plan replace writes `backups/pre-plan-<planid>-<timestamp>.db` before deleting any plan-owned
   rows. If that snapshot fails, replace is refused.
 - Newest 14 retained; older pruned.
-- `GET /api/export` dumps every current table in §4, including stored `plan_sources` and game
-  ledger/unlock tables, as one JSON document on demand.
+- `GET /api/export` dumps every table in §4 except `pairing_codes` (ephemeral one-time secrets),
+  including stored `plan_sources` and game ledger/unlock tables, as one JSON document on demand.
+  `schema_migrations` appears as `schema_version`.
 - Restore is manual and out of scope for v1: stop the server, replace the file, start it.
