@@ -76,6 +76,11 @@ type applyPlanResponse struct {
 }
 
 func (s *Server) getPlan(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	current, err := s.store.CurrentPlan(r.Context())
 	if err != nil {
 		s.handleStoreError(w, err)

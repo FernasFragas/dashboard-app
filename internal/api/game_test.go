@@ -15,7 +15,7 @@ func TestTaskWriteReturnsGameEnvelopeAndGameEndpoints(t *testing.T) {
 	var taskID int64
 	var version int
 	if err := srv.store.DB().QueryRowContext(context.Background(), `
-		SELECT id, version FROM tasks WHERE seed_key = 'W3:regression-gate-in-ci'`).Scan(&taskID, &version); err != nil {
+		SELECT id, version FROM tasks WHERE seed_key = 'W7:regression-gate-in-ci'`).Scan(&taskID, &version); err != nil {
 		t.Fatalf("find seeded task: %v", err)
 	}
 
@@ -90,7 +90,7 @@ func TestGameAchievementConditions(t *testing.T) {
 
 	facts := store.GameAchievementFacts{
 		DoneSeedKeys: map[string]bool{
-			"W3:regression-gate-in-ci": true,
+			"W7:regression-gate-in-ci": true,
 		},
 		CompleteWeeks: 1,
 	}

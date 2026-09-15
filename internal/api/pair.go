@@ -79,6 +79,11 @@ func (s *Server) createPair(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) pairSVG(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	raw := r.PathValue("code")
 	if !strings.HasSuffix(raw, ".svg") {
 		http.NotFound(w, r)

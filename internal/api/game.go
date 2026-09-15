@@ -58,15 +58,15 @@ var gameAchievementConditions = map[string]gameAchievementCondition{
 		return facts.NumberLogs > 0
 	},
 	"gatekeeper": func(facts store.GameAchievementFacts, _ time.Time, _ *time.Location) bool {
-		return facts.DoneSeedKeys["W3:regression-gate-in-ci"]
+		return facts.DoneSeedKeys["W7:regression-gate-in-ci"]
 	},
 	"chaos_suite": func(facts store.GameAchievementFacts, _ time.Time, _ *time.Location) bool {
 		for _, key := range []string{
-			"W5:k6-mixed-load-baseline",
-			"W5:kill-redis-mid-load-fail-open",
-			"W5:kill-jwks-mid-load-fail-static",
-			"W6:slot-starvation",
-			"W6:failover-lands-on-vllm",
+			"W9:k6-mixed-load-baseline",
+			"W9:kill-redis-mid-load",
+			"W9:kill-jwks-mid-load",
+			"W10:slot-starvation",
+			"W10:failover-lands-on-vllm",
 		} {
 			if !facts.DoneSeedKeys[key] {
 				return false
@@ -75,10 +75,10 @@ var gameAchievementConditions = map[string]gameAchievementCondition{
 		return true
 	},
 	"honest_number": func(facts store.GameAchievementFacts, _ time.Time, _ *time.Location) bool {
-		return facts.DoneSeedKeys["W10:the-honest-number"]
+		return facts.DoneSeedKeys["W14:the-honest-number"]
 	},
 	"in_the_arena": func(facts store.GameAchievementFacts, _ time.Time, _ *time.Location) bool {
-		return facts.DoneSeedKeys["W4:pr-1-cv-line"]
+		return facts.DoneSeedKeys["W2:pr-1-docs-or-conformance"]
 	},
 	"shepherd": func(facts store.GameAchievementFacts, _ time.Time, _ *time.Location) bool {
 		return facts.DoneGoalCodes["G7"]
@@ -96,7 +96,7 @@ var gameAchievementConditions = map[string]gameAchievementCondition{
 		return gameWellRested(facts.XPEventTimes, now, loc)
 	},
 	"boss_w12": func(facts store.GameAchievementFacts, _ time.Time, _ *time.Location) bool {
-		return facts.CompletedCheckpoints["W12"]
+		return facts.CompletedCheckpoints["W16"]
 	},
 	"streak_7": func(facts store.GameAchievementFacts, now time.Time, loc *time.Location) bool {
 		return gameStreakAtLeast(facts.XPEventTimes, now, loc, 7)

@@ -22,29 +22,34 @@
       "sort_order": 30
     },
     {
+      "id": "mcap",
+      "label": "mcap-tools",
+      "sort_order": 40
+    },
+    {
       "id": "oss",
       "label": "Open source",
-      "sort_order": 40
+      "sort_order": 50
     },
     {
       "id": "learn",
       "label": "Learning",
-      "sort_order": 50
+      "sort_order": 60
     },
     {
       "id": "write",
       "label": "Writing",
-      "sort_order": 60
+      "sort_order": 70
     },
     {
       "id": "career",
       "label": "Career",
-      "sort_order": 70
+      "sort_order": 80
     },
     {
       "id": "all",
       "label": "All repos",
-      "sort_order": 80
+      "sort_order": 90
     }
   ],
   "phases": [
@@ -82,7 +87,7 @@
       "phase": "P1",
       "start_date": "2026-08-24",
       "end_date": "2026-08-30",
-      "focus": "Golden set",
+      "focus": "Robotics on-ramp (G18) + dashboard (G0)",
       "sort_order": 1
     },
     {
@@ -90,7 +95,7 @@
       "phase": "P1",
       "start_date": "2026-08-31",
       "end_date": "2026-09-06",
-      "focus": "Runner + metrics",
+      "focus": "Fleet repoint Stage 1",
       "sort_order": 2
     },
     {
@@ -98,7 +103,7 @@
       "phase": "P1",
       "start_date": "2026-09-07",
       "end_date": "2026-09-13",
-      "focus": "Ship the number (G1)",
+      "focus": "Fleet semantics + AI leg + **apply to Rerun** (G19, G20)",
       "sort_order": 3
     },
     {
@@ -106,7 +111,7 @@
       "phase": "P1",
       "start_date": "2026-09-14",
       "end_date": "2026-09-20",
-      "focus": "Write-up + observability + vLLM up",
+      "focus": "MQTT + Medium #1 (G21)",
       "sort_order": 4
     },
     {
@@ -114,7 +119,7 @@
       "phase": "P1",
       "start_date": "2026-09-21",
       "end_date": "2026-09-27",
-      "focus": "Chaos: fail-open / fail-static",
+      "focus": "Golden set (now four domains)",
       "sort_order": 5
     },
     {
@@ -122,7 +127,7 @@
       "phase": "P1",
       "start_date": "2026-09-28",
       "end_date": "2026-10-04",
-      "focus": "Chaos: slots + failover → vLLM",
+      "focus": "Eval runner + metrics",
       "sort_order": 6
     },
     {
@@ -130,7 +135,7 @@
       "phase": "P1",
       "start_date": "2026-10-05",
       "end_date": "2026-10-11",
-      "focus": "Profile + RELIABILITY.md (G2)",
+      "focus": "Ship the number (G1)",
       "sort_order": 7
     },
     {
@@ -138,7 +143,7 @@
       "phase": "P1",
       "start_date": "2026-10-12",
       "end_date": "2026-10-18",
-      "focus": "Serving week (G10)",
+      "focus": "Write-up + observability + vLLM up",
       "sort_order": 8
     },
     {
@@ -146,7 +151,7 @@
       "phase": "P1",
       "start_date": "2026-10-19",
       "end_date": "2026-10-25",
-      "focus": "Postgres, provisioned by Terraform",
+      "focus": "Chaos: fail-open / fail-static",
       "sort_order": 9
     },
     {
@@ -154,7 +159,7 @@
       "phase": "P1",
       "start_date": "2026-10-26",
       "end_date": "2026-11-01",
-      "focus": "Postgres depth + pgvector (G3, G4)",
+      "focus": "Chaos: slots + failover → vLLM",
       "sort_order": 10
     },
     {
@@ -162,7 +167,7 @@
       "phase": "P1",
       "start_date": "2026-11-02",
       "end_date": "2026-11-08",
-      "focus": "Fine-tune week (G11)",
+      "focus": "Profile + RELIABILITY.md (G2)",
       "sort_order": 11
     },
     {
@@ -170,64 +175,96 @@
       "phase": "P1",
       "start_date": "2026-11-09",
       "end_date": "2026-11-15",
-      "focus": "Checkpoint + Terraform stack + career (G9, G14)",
+      "focus": "**Mid-flight review (Mon Nov 9)** + serving week (G10)",
       "sort_order": 12
+    },
+    {
+      "code": "W13",
+      "phase": "P1",
+      "start_date": "2026-11-16",
+      "end_date": "2026-11-22",
+      "focus": "Postgres, provisioned by Terraform",
+      "sort_order": 13
+    },
+    {
+      "code": "W14",
+      "phase": "P1",
+      "start_date": "2026-11-23",
+      "end_date": "2026-11-29",
+      "focus": "Postgres depth + pgvector (G3, G4)",
+      "sort_order": 14
+    },
+    {
+      "code": "W15",
+      "phase": "P1",
+      "start_date": "2026-11-30",
+      "end_date": "2026-12-06",
+      "focus": "Fine-tune week (G11)",
+      "sort_order": 15
+    },
+    {
+      "code": "W16",
+      "phase": "P1",
+      "start_date": "2026-12-07",
+      "end_date": "2026-12-13",
+      "focus": "**Checkpoint** + Terraform stack + career (G9, G14)",
+      "sort_order": 16
     },
     {
       "code": "B1",
       "phase": "P2",
-      "start_date": "2026-11-16",
-      "end_date": "2026-11-29",
-      "focus": null,
-      "sort_order": 13
+      "start_date": "2026-12-14",
+      "end_date": "2026-12-27",
+      "focus": "SAA + K8s (holiday-light Dec 24–27)",
+      "sort_order": 17
     },
     {
       "code": "B2",
       "phase": "P2",
-      "start_date": "2026-11-30",
-      "end_date": "2026-12-13",
-      "focus": "Kafka depth (G12)",
-      "sort_order": 14
+      "start_date": "2026-12-28",
+      "end_date": "2027-01-10",
+      "focus": "holiday-light",
+      "sort_order": 18
     },
     {
       "code": "B3",
       "phase": "P2",
-      "start_date": "2026-12-14",
-      "end_date": "2026-12-27",
-      "focus": null,
-      "sort_order": 15
+      "start_date": "2027-01-11",
+      "end_date": "2027-01-24",
+      "focus": "Kafka depth (G12)",
+      "sort_order": 19
     },
     {
       "code": "B4",
       "phase": "P2",
-      "start_date": "2026-12-28",
-      "end_date": "2027-01-10",
-      "focus": "holiday-light",
-      "sort_order": 16
+      "start_date": "2027-01-25",
+      "end_date": "2027-02-07",
+      "focus": "Gateway hardening",
+      "sort_order": 20
     },
     {
       "code": "B5",
       "phase": "P2",
-      "start_date": "2027-01-11",
-      "end_date": "2027-01-24",
+      "start_date": "2027-02-08",
+      "end_date": "2027-02-21",
       "focus": null,
-      "sort_order": 17
+      "sort_order": 21
     },
     {
       "code": "B6",
       "phase": "P2",
-      "start_date": "2027-01-25",
-      "end_date": "2027-02-07",
+      "start_date": "2027-02-22",
+      "end_date": "2027-03-07",
       "focus": null,
-      "sort_order": 18
+      "sort_order": 22
     },
     {
       "code": "B7",
       "phase": "P2",
-      "start_date": "2027-02-08",
-      "end_date": "2027-02-21",
+      "start_date": "2027-03-08",
+      "end_date": "2027-03-21",
       "focus": null,
-      "sort_order": 19
+      "sort_order": 23
     }
   ],
   "rhythm": [
@@ -320,13 +357,13 @@
   ],
   "metric_defs": [
     {
-      "name": "Rejection rate v2 vs v1",
+      "name": "Rejection rate v2 vs v1 (incl. fleet windows)",
       "slug": "rejection_rate",
       "unit": "%",
       "baseline": null,
       "target": "measurably ↓, CI-gated",
-      "definition": "Share of golden-set summaries ValidateAgainstEvidence rejects",
-      "how_to_measure": "make eval over the frozen 30-window set; record per prompt × model",
+      "definition": "Share of golden-set summaries ValidateAgainstEvidence rejects, fleet windows included",
+      "how_to_measure": "make eval over the frozen 30-window set (four domains); record per prompt × model",
       "sort_order": 1
     },
     {
@@ -386,16 +423,16 @@
       "baseline": "\"750\" (SQLite, misleading)",
       "target": "real measured number",
       "definition": "Messages per second with N concurrent writers on Postgres",
-      "how_to_measure": "Rerun the W5 load profile; put N in the note",
+      "how_to_measure": "Rerun the W9 load profile; put N in the note",
       "sort_order": 7
     },
     {
-      "name": "OSS PRs merged",
+      "name": "OSS PRs merged (foxglove/mcap)",
       "slug": "oss_prs_merged",
       "unit": "PRs",
       "baseline": "0",
-      "target": "2",
-      "definition": "PRs you opened that a maintainer merged",
+      "target": "3 by W13",
+      "definition": "PRs you opened that a foxglove/mcap maintainer merged",
       "how_to_measure": "Count from your GitHub PR list; merged only — open or closed-unmerged do not count",
       "sort_order": 8
     },
@@ -404,7 +441,7 @@
       "slug": "applications_sent",
       "unit": "applications",
       "baseline": "0",
-      "target": "20",
+      "target": "1 by W3 · 11 by W16 · 21 by B7",
       "definition": "Applications actually submitted",
       "how_to_measure": "Count the 📮 entries in the Log for the period; the Log is the record, this is the roll-up",
       "sort_order": 9
@@ -414,7 +451,7 @@
       "slug": "medium_posts",
       "unit": "posts",
       "baseline": null,
-      "target": "2 by W7 · 3 by B1 · 5 by Feb",
+      "target": "#1 W4 · #2 W8 · #3 W11 · #4 B2 · 5 by B7",
       "definition": "Posts published, not drafted",
       "how_to_measure": "Count live URLs; a draft is a Learned bullet, not a metric",
       "sort_order": 10
@@ -424,10 +461,20 @@
       "slug": "ttft",
       "unit": "s",
       "baseline": null,
-      "target": "tracked from W8",
+      "target": "tracked from W12",
       "definition": "Request to first streamed token through the gateway",
       "how_to_measure": "TTFT metric during the standard k6 profile",
       "sort_order": 11
+    },
+    {
+      "name": "Robots reporting",
+      "slug": "fleet_robots_reporting",
+      "unit": "robots",
+      "baseline": "0",
+      "target": "3 simulated by W3",
+      "definition": "Distinct robot_ids seen in the ingest window",
+      "how_to_measure": "fleet_robots_reporting gauge on the fleet dashboard, over the last 5 min",
+      "sort_order": 12
     }
   ],
   "goals": [
@@ -443,10 +490,10 @@
     {
       "code": "G1",
       "title": "Eval harness",
-      "done_means": "Rejection-rate number, 30-window golden set, 2 models, CI gate",
+      "done_means": "Rejection-rate number, 30-window golden set **incl. fleet domain**, 2 models, CI gate",
       "project": "synapse",
       "phase": "P1",
-      "target": "W3",
+      "target": "W7",
       "sort_order": 200
     },
     {
@@ -455,7 +502,7 @@
       "done_means": "RELIABILITY.md: 5 experiments w/ graphs + 1 pprof fix",
       "project": "gateway",
       "phase": "P1",
-      "target": "W7",
+      "target": "W11",
       "sort_order": 300
     },
     {
@@ -464,7 +511,7 @@
       "done_means": "Pool/isolation/index justified + honest concurrent number",
       "project": "synapse",
       "phase": "P1",
-      "target": "W10",
+      "target": "W14",
       "sort_order": 400
     },
     {
@@ -473,7 +520,7 @@
       "done_means": "Top-k semantic query live",
       "project": "synapse",
       "phase": "P1",
-      "target": "W10",
+      "target": "W14",
       "sort_order": 500
     },
     {
@@ -497,28 +544,28 @@
     {
       "code": "G7",
       "title": "OSS presence",
-      "done_means": "2 PRs merged",
+      "done_means": "**3 merged PRs in foxglove/mcap**",
       "project": "oss",
       "phase": "P1",
-      "target": "W9 / P2",
+      "target": "W13",
       "sort_order": 800
     },
     {
       "code": "G8",
       "title": "Writing",
-      "done_means": "3 Medium posts",
+      "done_means": "4 posts: fleet W4 · eval W8 · chaos W11 · fine-tune B2",
       "project": "write",
-      "phase": "P1",
-      "target": "2 by W7, #3 in B1",
+      "phase": "P2",
+      "target": "B2",
       "sort_order": 900
     },
     {
       "code": "G9",
       "title": "Career round 1",
-      "done_means": "CV+LinkedIn rebuilt, 10 applications",
+      "done_means": "CV+LinkedIn rebuilt, 10 applications (Rerun already sent W3)",
       "project": "career",
       "phase": "P1",
-      "target": "W12",
+      "target": "W16",
       "sort_order": 1000
     },
     {
@@ -527,7 +574,7 @@
       "done_means": "vLLM behind gateway: batching + streaming, bake-off",
       "project": "gateway",
       "phase": "P1",
-      "target": "W8",
+      "target": "W12",
       "sort_order": 1100
     },
     {
@@ -536,7 +583,7 @@
       "done_means": "LoRA + quantize + eval vs base on golden set",
       "project": "synapse",
       "phase": "P1",
-      "target": "W11",
+      "target": "W15",
       "sort_order": 1200
     },
     {
@@ -545,7 +592,7 @@
       "done_means": "DLQ, retries, backpressure, idempotency live",
       "project": "synapse",
       "phase": "P2",
-      "target": "P2-B2",
+      "target": "P2-B3",
       "sort_order": 1300
     },
     {
@@ -554,16 +601,16 @@
       "done_means": "W\u0026B/MLflow + nightly eval regression alert",
       "project": "synapse",
       "phase": "P2",
-      "target": "P2-B1",
+      "target": "P2-B2",
       "sort_order": 1400
     },
     {
       "code": "G14",
       "title": "IaC",
-      "done_means": "Terraform: cloud PG (W9) → full stack (W12)",
+      "done_means": "Terraform: cloud PG (W13) → full stack (W16)",
       "project": "synapse",
       "phase": "P1",
-      "target": "W12",
+      "target": "W16",
       "sort_order": 1500
     },
     {
@@ -572,7 +619,7 @@
       "done_means": "OWASP review, gosec/govulncheck clean, OAuth",
       "project": "all",
       "phase": "P1",
-      "target": "W12 / P2-B6",
+      "target": "W16 / P2-B6",
       "sort_order": 1600
     },
     {
@@ -587,62 +634,99 @@
     {
       "code": "G17",
       "title": "Role",
-      "done_means": "Platform/AI-infra offer signed",
+      "done_means": "Platform / AI-infra / **robotics-infra** offer signed",
       "project": "career",
       "phase": "P3",
       "target": "Q2 2027",
       "sort_order": 1800
+    },
+    {
+      "code": "G18",
+      "title": "Robotics literacy + mcap-tools",
+      "done_means": "Read a public bag cold; mcap-tools reads/writes valid MCAP (`mcap doctor` passes)",
+      "project": "mcap",
+      "phase": "P1",
+      "target": "W1",
+      "sort_order": 1900
+    },
+    {
+      "code": "G19",
+      "title": "Fleet repoint",
+      "done_means": "MCAP source behind same interface, 5 mapped types, fleet dashboard, timeline endpoint, grounded AI fleet summary, recording in README",
+      "project": "synapse",
+      "phase": "P1",
+      "target": "W3",
+      "sort_order": 2000
+    },
+    {
+      "code": "G20",
+      "title": "Rerun application",
+      "done_means": "Applied, artifact + recording linked",
+      "project": "career",
+      "phase": "P1",
+      "target": "W3",
+      "sort_order": 2100
+    },
+    {
+      "code": "G21",
+      "title": "MQTT third source",
+      "done_means": "QoS-1 duplicate-convergence demo",
+      "project": "synapse",
+      "phase": "P1",
+      "target": "W4",
+      "sort_order": 2200
     }
   ],
   "tasks": [
     {
-      "seed_key": "W1:golden-set-committed-then-frozen-forever",
+      "seed_key": "W1:ros-2-literacy-3h-weekday-slots",
       "week": "W1",
-      "title": "Golden set committed (then frozen forever)",
-      "project": "synapse",
+      "title": "ROS 2 literacy (~3h, weekday slots)",
+      "project": "learn",
       "steps": [
-        "Create `eval/golden/`.",
-        "Write a tiny exporter (`cmd/goldenexport`) that dumps event windows from your dev DB to JSON, one file per window.",
-        "Pick 16–26 real windows across Energy / Finance / Monitoring.",
-        "Hand-write 4 nasty ones: `empty.json`, `single_event.json`, `one_domain_floods.json`, `same_timestamps.json`.",
-        "Add `eval/golden/README.md`: one line per file saying what it tests. Commit."
+        "Learn the seven concepts to one-sentence depth: node, topic, message type, service, action, bag, TF.",
+        "Install the `mcap` CLI + Foxglove (free tier); open a Foxglove sample bag; 20 minutes of just looking.",
+        "Rehearse the six \"why robot data is hard\" points out loud; deliver #5 (intermittent connectivity) and connect it to the Emma partner-outage work in the same breath."
       ],
-      "done_means": "set is in git and treated as read-only from now on.",
+      "done_means": "you can describe a public bag's topics, types and rates without looking anything up.",
       "sort_order": 100,
       "skills": [
-        "evals"
+        "ros2"
       ]
     },
     {
-      "seed_key": "W1:summary-v2-prompt-in-a-versioned-prompts-dir",
+      "seed_key": "W1:mcap-tools-saturday-1-weekend-500-lines-the-sanctioned-exception",
       "week": "W1",
-      "title": "summary.v2 prompt in a versioned prompts dir",
-      "project": "synapse",
+      "title": "mcap-tools (Saturday, ≤1 weekend, \u003c500 lines — the sanctioned exception)",
+      "project": "mcap",
       "steps": [
-        "Create `prompts/`; move the current prompt to `prompts/summary.v1.txt`.",
-        "Write `summary.v2.txt` with one deliberate change (e.g. stricter citation rules, tighter schema instructions). Note the diff in the file header.",
-        "Make `SummaryPromptVersion` load by version from that dir via config."
+        "`mcap info` / `mcap cat` on the IEEE DataPort bag (`rosbag2_2024_07_19_11_01_37`: 53k+ msgs, 100+ topics).",
+        "Reader: iterate messages, print channel/topic/log-time/publish-time/size; counts match `mcap info`.",
+        "Read the embedded Schema → Channel → Message records — same shape as a schema registry.",
+        "Writer: synthetic MCAP from scratch; `mcap doctor` passes.",
+        "Decode one CDR type (`BatteryState` or `Twist`) into a Go struct — once is enough."
       ],
-      "done_means": "the pipeline runs with either version by flipping one config value.",
+      "done_means": "repo reads a bag, prints a topic/rate summary, writes valid MCAP; frozen after this week.",
       "sort_order": 200,
       "skills": [
-        "evals"
+        "mcap"
       ]
     },
     {
-      "seed_key": "W1:oss-target-picked",
+      "seed_key": "W1:foxglove-mcap-contribution-setup",
       "week": "W1",
-      "title": "OSS target picked",
+      "title": "foxglove/mcap contribution setup",
       "project": "oss",
       "steps": [
-        "Shortlist 3 Go projects you already use (OTel Collector, sqlc, Bubble Tea, Kafka Go client, Loki).",
-        "For each: skim CONTRIBUTING.md + the last 10 merged PRs (size, review tone, response time).",
-        "Pick one. Watch → Issues on GitHub. Bookmark 3 open issues touching code you understand."
+        "Watch issues; read CONTRIBUTING + the last 10 merged PRs in `go/`.",
+        "Bookmark 3 candidate issues (docs, conformance tests, reader/writer edge cases).",
+        "Note the rules: ~+100/−100 lines, issue-first for anything non-trivial, no bot PRs, draft while iterating, CI needs maintainer approval — expect latency."
       ],
-      "done_means": "one repo chosen, 3 candidate issues bookmarked.",
+      "done_means": "3 candidates bookmarked.",
       "sort_order": 300,
       "skills": [
-        "oss"
+        "oss",
+        "mcap"
       ]
     },
     {
@@ -651,10 +735,9 @@
       "title": "Subscriptions + DDIA ch.1",
       "project": "learn",
       "steps": [
-        "Buy O'Reilly annual + ByteByteGo. Subscribe to 2 newsletters (Pragmatic Engineer + one AI-infra).",
-        "Read DDIA ch.1; write 3 bullets in the daily log."
+        "— O'Reilly + ByteByteGo, 2 newsletters, DDIA ch.1 with 3 bullets logged."
       ],
-      "done_means": "receipts exist, notes exist.",
+      "done_means": null,
       "sort_order": 400,
       "skills": [
         "distsys"
@@ -666,45 +749,30 @@
       "title": "Dashboard v1 (G0)",
       "project": "dash",
       "steps": [
-        "Execute `dashboard-plan.md` M0→M6 in order. Hard stop at 14h — whatever's missing goes to the stretch list."
+        "— finish per `dashboard-plan-v3.md`; hard stop at the timebox."
       ],
-      "done_means": "the 6 acceptance checks pass on your phone over Tailscale.",
+      "done_means": null,
       "sort_order": 500,
       "skills": [
         "tooling"
       ]
     },
     {
-      "seed_key": "W2:eval-runner",
+      "seed_key": "W2:mcap-ingest-source-stage-1",
       "week": "W2",
-      "title": "Eval runner",
+      "title": "MCAP ingest source (Stage 1)",
       "project": "synapse",
       "steps": [
-        "Create `cmd/evalrun`: loop {v1, v2} × {model A, model B} × every golden file.",
-        "Each run calls the existing summary pipeline; capture raw output + `ValidateAgainstEvidence` result.",
-        "Write one row per prompt×model×window to `eval/results/\u003cdate\u003e.json`.",
-        "Add `make eval`."
+        "Add an `mcap` source behind the same source interface as Kafka — **do not fork the pipeline**; the source-agnostic normaliser is the architectural argument.",
+        "Map five types → domain events: `BatteryState`→FleetBatteryReading · `Twist`→RobotVelocityCommand · `Odometry`→RobotPose · `DiagnosticArray`→RobotDiagnostic · `rosgraph Log`→RobotLogEvent.",
+        "Deliberately skip point clouds and camera frames — store reference + size only; write the *why* (cost; the interesting events are elsewhere) into the README now.",
+        "Ingest the IEEE bag end to end; normalised events land in the store."
       ],
-      "done_means": "`make eval` produces a committed results file.",
+      "done_means": "one real bag flows through the existing pipeline, unforked.",
       "sort_order": 100,
       "skills": [
-        "evals"
-      ]
-    },
-    {
-      "seed_key": "W2:core-metrics-baseline-logged",
-      "week": "W2",
-      "title": "Core metrics + baseline logged",
-      "project": "synapse",
-      "steps": [
-        "In the runner, compute per prompt×model: rejection rate, schema-validity % (parses as `EventSummary`), evidence-coverage %.",
-        "Print a summary table at the end of the run.",
-        "Commit the baseline results; log the headline numbers in the dashboard (📊)."
-      ],
-      "done_means": "baseline numbers exist in git + dashboard.",
-      "sort_order": 200,
-      "skills": [
-        "evals"
+        "mcap",
+        "distsys"
       ]
     },
     {
@@ -713,78 +781,95 @@
       "title": "AWS SAA started",
       "project": "learn",
       "steps": [
-        "Buy one prep course (Cantrill or Maarek — pick in 10 min, don't research for a week).",
-        "Do module 1 on Thursday; log it (📚)."
+        "— buy one course (Cantrill or Maarek, pick in 10 min); module 1 Thursday; exam sits in B1 (December)."
       ],
-      "done_means": "module 1 logged; exam window = late Nov (book in B1).",
-      "sort_order": 300,
+      "done_means": null,
+      "sort_order": 200,
       "skills": [
         "aws"
       ]
     },
     {
-      "seed_key": "W2:reproduce-a-real-bug",
+      "seed_key": "W2:pr-1-docs-or-conformance",
       "week": "W2",
-      "title": "Reproduce a real bug",
+      "title": "PR #1 (docs or conformance)",
       "project": "oss",
       "steps": [
-        "From your 3 bookmarks, pick the one you can reproduce locally.",
-        "Clone; write a minimal repro (failing test or 20-line `main.go`).",
-        "Comment on the issue with the repro + \"happy to fix if maintainers agree with direction\"."
+        "— small, learns the review culture. →"
       ],
-      "done_means": "your repro comment is posted.",
-      "sort_order": 400,
+      "done_means": "opened, responding to review within 24h.",
+      "sort_order": 300,
       "skills": [
         "oss"
       ]
     },
     {
-      "seed_key": "W3:stability-cost-latency-metrics",
+      "seed_key": "W3:fleet-semantics-stage-2",
       "week": "W3",
-      "title": "Stability + cost + latency metrics",
+      "title": "Fleet semantics (Stage 2)",
       "project": "synapse",
       "steps": [
-        "Add `-runs=N` to the runner; run each window 5× at your production temperature.",
-        "Compute drift: % of runs whose output differs field-by-field from run 1.",
-        "Record tokens + latency per call; compute € per summary from provider pricing."
+        "Add a `robot_id` dimension; ingest the same bag ×3 under different ids to simulate a fleet.",
+        "Idempotency keys on `(robot_id, topic, log_time)` — a replayed bag converges instead of duplicating. Say the partner-identity transplant explicitly in the README.",
+        "Fleet metrics: `fleet_robots_reporting` · `fleet_last_seen_seconds{robot_id}` · `fleet_events_ingested_total{robot_id,topic}` · `fleet_battery_percent{robot_id}` · `fleet_dlq_depth`.",
+        "**One** Grafana dashboard: robots reporting, last-seen heatmap, battery per robot, ingest rate by topic, DLQ depth.",
+        "`GET /fleet/{robot_id}/timeline?from=\u0026to=`."
       ],
-      "done_means": "results file has stability, cost, latency columns.",
+      "done_means": "replay converges; the dashboard is live.",
       "sort_order": 100,
+      "skills": [
+        "distsys",
+        "observability"
+      ]
+    },
+    {
+      "seed_key": "W3:ai-leg-stage-3-half-a-day",
+      "week": "W3",
+      "title": "AI leg (Stage 3, half a day)",
+      "project": "synapse",
+      "steps": [
+        "Point the bounded-evidence summariser at fleet events: \"Summarise robot-02, 14:00–14:30.\"",
+        "Confirm unsupported-citation rejection fires on fleet windows too."
+      ],
+      "done_means": "one grounded fleet summary, demo-ready. Lead with it.",
+      "sort_order": 200,
       "skills": [
         "evals"
       ]
     },
     {
-      "seed_key": "W3:regression-gate-in-ci",
+      "seed_key": "W3:ship-apply",
       "week": "W3",
-      "title": "Regression gate in CI",
+      "title": "Ship + apply",
       "project": "synapse",
       "steps": [
-        "Add a `make verify` step: run eval, fail if v2 rejection rate \u003e committed v1 baseline.",
-        "Add it as a GitHub Actions job.",
-        "Prove it: break the prompt on a branch → CI red; revert → green."
+        "README rewritten around fleet telemetry, problem-mapping table near the top (partner outage → robot offline · idempotent partner keys → device convergence · DLQ/replay → store-and-forward backfill).",
+        "`docker compose up` + a documented one-liner that ingests a public bag and populates the dashboard.",
+        "60–90s screen recording (dashboard + one AI summary), linked in README.",
+        "CV synapse entry re-nouned; **apply to Rerun (Infrastructure)** with artifact + recording."
       ],
-      "done_means": "you watched CI fail on a bad prompt.",
-      "sort_order": 200,
+      "done_means": "application sent with the artifact linked (G20). Never slip this.",
+      "sort_order": 300,
       "skills": [
-        "evals",
-        "tooling"
+        "career",
+        "writing"
       ]
     },
     {
-      "seed_key": "W3:the-sentence",
-      "week": "W3",
-      "title": "The sentence",
+      "seed_key": "W4:mqtt-third-source",
+      "week": "W4",
+      "title": "MQTT third source",
       "project": "synapse",
       "steps": [
-        "Fill in real numbers: \"v1→v2 dropped rejection from X% to Y% on a 30-window golden set, across 2 models.\"",
-        "Put it at the top of the README + CV draft; log it (📊)."
+        "Paho Go client + embedded `mochi-mqtt` broker for tests.",
+        "Publish a subset of normalised events at QoS 1, consume back; duplicates converge via the same keys — the source abstraction proven real.",
+        "Know cold: QoS 0/1/2 (and why teams avoid 2), persistent sessions/clean start, retained messages, **Last Will and Testament as the offline detector**, Paho's `Store` requirement, topic wildcards vs Kafka partitioning."
       ],
-      "done_means": "sentence written with real X and Y.",
-      "sort_order": 300,
+      "done_means": "convergence demo; you can explain QoS 1 vs at-least-once Kafka handled identically.",
+      "sort_order": 100,
       "skills": [
-        "evals",
-        "career"
+        "mqtt",
+        "distsys"
       ]
     },
     {
@@ -793,9 +878,152 @@
       "title": "Medium #1",
       "project": "write",
       "steps": [
-        "Outline 5 sections: problem → golden set → metrics → the number → CI gate.",
-        "Draft ~1200 words Sat/Sun; include the results table + 1 diagram.",
-        "Publish; log it (✍️)."
+        "— \"What robot fleets and third-party logistics have in common,\" straight from the mapping table. →"
+      ],
+      "done_means": "live URL.",
+      "sort_order": 200,
+      "skills": [
+        "writing"
+      ]
+    },
+    {
+      "seed_key": "W4:cv-skills-robotics-summary-variant",
+      "week": "W4",
+      "title": "CV skills + robotics summary variant",
+      "project": "career",
+      "steps": [
+        "— add MCAP, ROS 2 (literacy, stated honestly), MQTT; summary variant leading with *delivering state reliably to systems you can't reach*. →"
+      ],
+      "done_means": "variant saved.",
+      "sort_order": 300,
+      "skills": [
+        "career"
+      ]
+    },
+    {
+      "seed_key": "W5:golden-set-committed-then-frozen-forever",
+      "week": "W5",
+      "title": "Golden set committed (then frozen forever)",
+      "project": "synapse",
+      "steps": [
+        "Create `eval/golden/`; exporter (`cmd/goldenexport`) dumps event windows to JSON, one file per window.",
+        "Pick 16–26 real windows across Energy / Finance / Monitoring **/ Fleet** (fleet windows exist since W3 — this is the synergy).",
+        "Hand-write 4 nasty ones: empty window, single event, one domain flooding, near-identical timestamps.",
+        "`eval/golden/README.md`: one line per file. Commit."
+      ],
+      "done_means": "set in git, read-only from now on.",
+      "sort_order": 100,
+      "skills": [
+        "evals"
+      ]
+    },
+    {
+      "seed_key": "W5:summary-v2-prompt-in-a-versioned-prompts-dir",
+      "week": "W5",
+      "title": "summary.v2 prompt in a versioned prompts dir",
+      "project": "synapse",
+      "steps": [
+        "`prompts/summary.v1.txt` (current) + `summary.v2.txt` with one deliberate change, diff noted in header.",
+        "`SummaryPromptVersion` loads by version via config."
+      ],
+      "done_means": "either version runs by flipping one config value.",
+      "sort_order": 200,
+      "skills": [
+        "evals"
+      ]
+    },
+    {
+      "seed_key": "W5:pr-1-shepherd-substantive-issue",
+      "week": "W5",
+      "title": "PR #1 shepherd + substantive issue",
+      "project": "oss",
+      "steps": [
+        "— merge PR #1 if pending; pick the substantive Go reader/writer issue for PR #2; comment intent. →"
+      ],
+      "done_means": "issue claimed.",
+      "sort_order": 300,
+      "skills": [
+        "oss"
+      ]
+    },
+    {
+      "seed_key": "W6:eval-runner",
+      "week": "W6",
+      "title": "Eval runner",
+      "project": "synapse",
+      "steps": [
+        "— `cmd/evalrun`: {v1,v2} × {model A, model B} × every golden file; capture raw output + `ValidateAgainstEvidence`; one row per combo to `eval/results/\u003cdate\u003e.json`; `make eval`. →"
+      ],
+      "done_means": "committed results file.",
+      "sort_order": 100,
+      "skills": [
+        "evals"
+      ]
+    },
+    {
+      "seed_key": "W6:core-metrics-baseline",
+      "week": "W6",
+      "title": "Core metrics + baseline",
+      "project": "synapse",
+      "steps": [
+        "— rejection rate, schema-validity %, evidence-coverage %; summary table; log headline numbers (📊). →"
+      ],
+      "done_means": "baseline in git + dashboard.",
+      "sort_order": 200,
+      "skills": [
+        "evals"
+      ]
+    },
+    {
+      "seed_key": "W7:stability-cost-latency",
+      "week": "W7",
+      "title": "Stability + cost + latency",
+      "project": "synapse",
+      "steps": [
+        "— `-runs=5` per window at prod temperature; drift %; tokens + latency → € per summary. →"
+      ],
+      "done_means": "columns in results.",
+      "sort_order": 100,
+      "skills": [
+        "evals"
+      ]
+    },
+    {
+      "seed_key": "W7:regression-gate-in-ci",
+      "week": "W7",
+      "title": "Regression gate in CI",
+      "project": "synapse",
+      "steps": [
+        "— `make verify` fails if v2 rejection \u003e v1 baseline; GitHub Actions job; prove it red on a broken prompt, green on revert. →"
+      ],
+      "done_means": "you watched CI fail.",
+      "sort_order": 200,
+      "skills": [
+        "evals"
+      ]
+    },
+    {
+      "seed_key": "W7:the-sentence",
+      "week": "W7",
+      "title": "The sentence",
+      "project": "synapse",
+      "steps": [
+        "— \"v1→v2 dropped rejection X%→Y% on a 30-window golden set (incl. fleet), 2 models.\" README top + CV + 📊. →"
+      ],
+      "done_means": "real X and Y.",
+      "sort_order": 300,
+      "skills": [
+        "evals",
+        "writing"
+      ]
+    },
+    {
+      "seed_key": "W8:medium-2",
+      "week": "W8",
+      "title": "Medium #2",
+      "project": "write",
+      "steps": [
+        "— the eval harness, number in the title, results table + 1 diagram. →"
       ],
       "done_means": "live URL.",
       "sort_order": 100,
@@ -804,165 +1032,141 @@
       ]
     },
     {
-      "seed_key": "W4:prometheus-grafana",
-      "week": "W4",
+      "seed_key": "W8:prometheus-grafana",
+      "week": "W8",
       "title": "Prometheus + Grafana",
       "project": "gateway",
       "steps": [
-        "Add a `promhttp` `/metrics` endpoint.",
-        "Instrument: request-duration histogram (labels: route, provider), slots-in-use gauge, Redis-up gauge, JWKS-cache-age gauge.",
-        "docker-compose: Prometheus (scraping gateway) + Grafana.",
-        "Build one dashboard: latency p50/95/99, slots, dependency health. Export its JSON into the repo."
+        "— `/metrics`; histogram (route, provider), slots gauge, Redis-up, JWKS-cache-age; compose Prometheus + Grafana; one dashboard, JSON exported. →"
       ],
-      "done_means": "send test load, watch p99 move on the board.",
+      "done_means": "p99 moves under test load.",
       "sort_order": 200,
       "skills": [
         "observability"
       ]
     },
     {
-      "seed_key": "W4:otel-tracing-on-the-hot-path",
-      "week": "W4",
-      "title": "OTel tracing on the hot path",
+      "seed_key": "W8:otel-on-the-hot-path",
+      "week": "W8",
+      "title": "OTel on the hot path",
       "project": "gateway",
       "steps": [
-        "Add otel-go; spans for auth → ratelimit → slot acquire → provider call.",
-        "Add Jaeger to docker-compose; export traces to it.",
-        "Open one trace showing all 4 spans with timings; screenshot to `docs/`."
+        "— spans auth → ratelimit → slot → provider; Jaeger in compose; screenshot to `docs/`. →"
       ],
-      "done_means": "screenshot saved.",
+      "done_means": "full trace saved.",
       "sort_order": 300,
       "skills": [
         "observability"
       ]
     },
     {
-      "seed_key": "W4:vllm-serving-a-small-model",
-      "week": "W4",
+      "seed_key": "W8:vllm-serving-a-small-model",
+      "week": "W8",
       "title": "vLLM serving a small model",
       "project": "gateway",
       "steps": [
-        "No local GPU? Rent one (RunPod/Lambda, 24GB card, ~€0.3–0.7/h — comes out of the API-credit budget).",
-        "`pip install vllm`; `vllm serve` a small instruct model (Qwen2.5-1.5B or Llama-3.2-3B class).",
-        "`curl` the OpenAI-compatible `/v1/chat/completions`; confirm streamed tokens.",
-        "Save the exact launch command + model name in `docs/`."
+        "— rent GPU if needed (RunPod/Lambda, ~€0.3–0.7/h); `vllm serve` a Qwen2.5-1.5B-class model; curl streamed completion; launch command in docs. →"
       ],
-      "done_means": "curl returns a streamed completion.",
+      "done_means": "streamed completion.",
       "sort_order": 400,
       "skills": [
         "serving"
       ]
     },
     {
-      "seed_key": "W4:pr-1-cv-line",
-      "week": "W4",
-      "title": "PR #1 + CV line",
+      "seed_key": "W8:pr-2-substantive",
+      "week": "W8",
+      "title": "PR #2 (substantive)",
       "project": "oss",
       "steps": [
-        "Implement the fix on a branch; add a test; follow the project's checklist (lint, commit format).",
-        "Open the PR referencing the issue. Respond to any review within 24h.",
-        "Add the eval-harness line to the CV."
+        "— implement + test per the project's checklist; open referencing the issue. →"
       ],
-      "done_means": "PR open with green CI.",
+      "done_means": "open, CI green.",
       "sort_order": 500,
       "skills": [
         "oss"
       ]
     },
     {
-      "seed_key": "W5:k6-mixed-load-baseline",
-      "week": "W5",
+      "seed_key": "W9:k6-mixed-load-baseline",
+      "week": "W9",
       "title": "k6 mixed-load baseline",
       "project": "gateway",
       "steps": [
-        "Write a k6 script (`load/`) with 2 scenarios sharing the gateway: fast client (high rps, short prompts) + slow client (low rps, long streaming), different API keys.",
-        "Run 10 min; save Grafana snapshot of p50/95/99 + error rate to `docs/reliability/baseline.png`."
+        "— fast high-rps + slow streaming clients, different keys; 10 min; snapshot to `docs/reliability/baseline.png`. →"
       ],
-      "done_means": "baseline graphs saved.",
+      "done_means": "saved.",
       "sort_order": 100,
       "skills": [
         "chaos"
       ]
     },
     {
-      "seed_key": "W5:kill-redis-mid-load-fail-open",
-      "week": "W5",
-      "title": "Kill Redis mid-load (fail-open)",
+      "seed_key": "W9:kill-redis-mid-load",
+      "week": "W9",
+      "title": "Kill Redis mid-load",
       "project": "gateway",
       "steps": [
-        "Start mixed load; at minute 5, `docker stop redis`.",
-        "Verify requests keep succeeding; capture the degradation gauge flipping + any error blip.",
-        "`docker start redis`; verify limits re-engage.",
-        "Save annotated graph."
+        "— traffic keeps succeeding; degradation gauge captured; limits re-engage on restart; annotated graph. →"
       ],
-      "done_means": "graph shows flat traffic through the outage.",
+      "done_means": "flat traffic through the outage.",
       "sort_order": 200,
       "skills": [
         "chaos"
       ]
     },
     {
-      "seed_key": "W5:kill-jwks-mid-load-fail-static",
-      "week": "W5",
-      "title": "Kill JWKS mid-load (fail-static)",
+      "seed_key": "W9:kill-jwks-mid-load",
+      "week": "W9",
+      "title": "Kill JWKS mid-load",
       "project": "gateway",
       "steps": [
-        "Point the gateway at a JWKS URL you control (static file server in compose).",
-        "Stop it mid-load; verify cached keys keep validating.",
-        "Verify the staleness metric is visible and rising the whole time.",
-        "Save annotated graph."
+        "— cached keys keep validating; staleness metric visibly rising; annotated graph. →"
       ],
-      "done_means": "graph + staleness evidence in `docs/reliability/`.",
+      "done_means": "evidence in `docs/reliability/`.",
       "sort_order": 300,
       "skills": [
-        "chaos",
-        "security"
+        "chaos"
       ]
     },
     {
-      "seed_key": "W6:slot-starvation",
-      "week": "W6",
+      "seed_key": "W10:slot-starvation",
+      "week": "W10",
       "title": "Slot starvation",
       "project": "gateway",
       "steps": [
-        "Tune the slow-client scenario to hold streaming requests until every slot is taken (slot gauge at max).",
-        "Measure the fast client during starvation: queue time, 429s, latency.",
-        "Write 5 lines: what slots showed that rate limiting alone never would."
+        "— slow client holds every slot; measure fast client (queue time, 429s, latency); 5 lines on what slots showed that rate limits can't. →"
       ],
-      "done_means": "starvation graph + notes committed.",
+      "done_means": "graph + notes.",
       "sort_order": 100,
       "skills": [
         "chaos"
       ]
     },
     {
-      "seed_key": "W6:vllm-wired-as-a-provider",
-      "week": "W6",
-      "title": "vLLM wired as a provider",
+      "seed_key": "W10:vllm-wired-as-provider-local-small",
+      "week": "W10",
+      "title": "vLLM wired as provider `local-small`",
       "project": "gateway",
       "steps": [
-        "Add a provider config entry for the vLLM OpenAI-compatible endpoint; alias it `local-small`.",
-        "Send one request through the gateway to it.",
-        "Confirm metrics/traces carry `provider=vllm`."
+        "— one proxied request; metrics/traces carry `provider=vllm`. →"
       ],
-      "done_means": "proxied completion visible in Grafana.",
+      "done_means": "visible in Grafana.",
       "sort_order": 200,
       "skills": [
-        "serving"
+        "serving",
+        "observability"
       ]
     },
     {
-      "seed_key": "W6:failover-lands-on-vllm",
-      "week": "W6",
+      "seed_key": "W10:failover-lands-on-vllm",
+      "week": "W10",
       "title": "Failover lands on vLLM",
       "project": "gateway",
       "steps": [
-        "Priority: primary = hosted API, fallback = `local-small`.",
-        "Under load, break the primary (invalid key or null-route its host).",
-        "From traces, measure failover latency (last primary failure → first fallback success).",
-        "Assert the response names the model that actually answered."
+        "— break the primary under load; failover latency from traces; response names the actual model. →"
       ],
-      "done_means": "failover latency number + model-attribution proof saved.",
+      "done_means": "number + attribution proof.",
       "sort_order": 300,
       "skills": [
         "chaos",
@@ -970,32 +1174,28 @@
       ]
     },
     {
-      "seed_key": "W7:pprof-find-and-fix-one-bottleneck",
-      "week": "W7",
-      "title": "pprof: find and fix one bottleneck",
+      "seed_key": "W11:pprof-one-bottleneck",
+      "week": "W11",
+      "title": "pprof: one bottleneck",
       "project": "gateway",
       "steps": [
-        "Under load, capture 30s CPU + heap profiles.",
-        "Pick the top hot frame in *your* code; write a one-line hypothesis.",
-        "Fix (buffer reuse, fewer allocs, avoid re-marshal — whatever the profile says).",
-        "Prove: `go test -bench` before/after + k6 p50/95/99 before/after."
+        "— 30s CPU + heap; hypothesis; fix; `go test -bench` + k6 p50/95/99 before/after. →"
       ],
-      "done_means": "before/after table committed.",
+      "done_means": "table committed.",
       "sort_order": 100,
       "skills": [
         "go-perf"
       ]
     },
     {
-      "seed_key": "W7:reliability-md",
-      "week": "W7",
+      "seed_key": "W11:reliability-md",
+      "week": "W11",
       "title": "RELIABILITY.md",
       "project": "gateway",
       "steps": [
-        "One section per experiment (Redis, JWKS, slots, failover, pprof): claim → method → graph → result.",
-        "Add a \"what surprised me\" line per section. Nothing surprised you? Re-run harder."
+        "— 5 sections: claim → method → graph → result + \"what surprised me\" each; nothing surprising = re-run harder. →"
       ],
-      "done_means": "merged with 5 graphs.",
+      "done_means": "merged, 5 graphs.",
       "sort_order": 200,
       "skills": [
         "chaos",
@@ -1003,144 +1203,167 @@
       ]
     },
     {
-      "seed_key": "W7:medium-2-honest-cv-numbers",
-      "week": "W7",
-      "title": "Medium #2 + honest CV numbers",
+      "seed_key": "W11:medium-3-honest-cv-numbers",
+      "week": "W11",
+      "title": "Medium #3 + honest CV numbers",
       "project": "write",
       "steps": [
-        "Post: \"I chaos-tested my own README\" — compress RELIABILITY.md.",
-        "Replace \"~750 msg/s local\" on the CV with 2–3 measured numbers (p99 under mixed load, failover latency)."
+        "— \"I chaos-tested my own README\"; replace \"~750 msg/s\" with measured numbers. →"
       ],
-      "done_means": "live URL + CV updated.",
+      "done_means": "URL + CV updated.",
       "sort_order": 300,
       "skills": [
-        "writing"
+        "writing",
+        "career"
       ]
     },
     {
-      "seed_key": "W8:batching-token-streaming",
-      "week": "W8",
+      "seed_key": "W11:pr-2-shepherd-line-up-pr-3",
+      "week": "W11",
+      "title": "PR #2 shepherd; line up PR #3.",
+      "project": "oss",
+      "steps": [],
+      "done_means": null,
+      "sort_order": 400,
+      "skills": [
+        "oss"
+      ]
+    },
+    {
+      "seed_key": "W12:mid-flight-review-30-min-mon-nov-9",
+      "week": "W12",
+      "title": "Mid-flight review (30 min, Mon Nov 9)",
+      "project": "dash",
+      "steps": [
+        "— eval number real? robotics pipeline responding (Rerun/others)? PRs merging? scope for W13–16 still right? Adjust in writing. →"
+      ],
+      "done_means": "written answers.",
+      "sort_order": 100,
+      "skills": [
+        "career"
+      ]
+    },
+    {
+      "seed_key": "W12:batching-token-streaming",
+      "week": "W12",
       "title": "Batching + token streaming",
       "project": "gateway",
       "steps": [
-        "Fire 20 concurrent requests at vLLM; record throughput vs sequential to see continuous batching work.",
-        "Verify SSE pass-through in the gateway: flush per chunk, zero buffering.",
-        "Add a TTFT (time-to-first-token) metric."
+        "— 20 concurrent vs sequential throughput; SSE pass-through flushes per chunk; TTFT metric. →"
       ],
-      "done_means": "`curl -N` through the gateway streams; TTFT on the dashboard.",
-      "sort_order": 100,
-      "skills": [
-        "serving"
-      ]
-    },
-    {
-      "seed_key": "W8:bake-off-table",
-      "week": "W8",
-      "title": "Bake-off table",
-      "project": "gateway",
-      "steps": [
-        "Pick 3–4 configs: small model FP16 · same model AWQ-quantized · hosted API model · (optional) one size up.",
-        "Run the identical k6 profile 10 min per config.",
-        "Record per config: p50/95/99, TTFT, tokens/s, € per 1k requests (GPU-hour or API price).",
-        "Commit `docs/serving-bakeoff.md`."
-      ],
-      "done_means": "table with ≥3 fully measured rows.",
+      "done_means": "`curl -N` streams; TTFT on dashboard.",
       "sort_order": 200,
       "skills": [
         "serving"
       ]
     },
     {
-      "seed_key": "W9:terraform-module-1-cloud-postgres",
-      "week": "W9",
+      "seed_key": "W12:bake-off-table",
+      "week": "W12",
+      "title": "Bake-off table",
+      "project": "gateway",
+      "steps": [
+        "— 3–4 configs (FP16, AWQ, hosted API, optional size-up); identical k6 profile ×10 min; p50/95/99, TTFT, tokens/s, €/1k; `docs/serving-bakeoff.md`. →"
+      ],
+      "done_means": "≥3 measured rows. *(Overflow → W13 Mon/Thu slots.)*",
+      "sort_order": 300,
+      "skills": [
+        "serving"
+      ]
+    },
+    {
+      "seed_key": "W13:terraform-module-1-cloud-postgres",
+      "week": "W13",
       "title": "Terraform module #1: cloud Postgres",
       "project": "synapse",
       "steps": [
-        "Create `infra/` **inside synapsePlatform** (no fourth repo) with pinned provider versions. Neon (community provider) or RDS (official AWS provider) — pick one, don't agonize.",
-        "Write the module: instance/project, database, role; connection string as output. Secrets via variables, `.tfvars` gitignored.",
-        "`terraform apply`; connect with `psql` using the output.",
-        "Prove reproducibility: `terraform destroy \u0026\u0026 terraform apply`, connect again."
+        "— `infra/` inside synapsePlatform, pinned providers, Neon or RDS; connection string output; secrets via gitignored `.tfvars`; `destroy \u0026\u0026 apply` reproduces; psql connects. →"
       ],
-      "done_means": "DB rebuilt from zero by two commands.",
+      "done_means": "two commands rebuild the DB.",
       "sort_order": 100,
       "skills": [
         "terraform"
       ]
     },
     {
-      "seed_key": "W9:postgres-behind-sqlc-pool-migrations",
-      "week": "W9",
+      "seed_key": "W13:postgres-behind-sqlc-pool-migrations",
+      "week": "W13",
       "title": "Postgres behind sqlc + pool + migrations",
       "project": "synapse",
       "steps": [
-        "Add pgx/v5 + pgxpool. Set `MaxConns` explicitly; write the justification as a comment (start: 2×cores or provider conn cap, whichever is lower).",
-        "Switch sqlc engine to postgres; regenerate; fix dialect breakage.",
-        "Init goose; schema → `001_init.sql`; wire `make migrate`.",
-        "Run the full test suite against the cloud DB."
+        "— pgx/v5, explicit `MaxConns` with written reasoning; sqlc engine switch; goose `001_init`; full suite green on cloud PG. →"
       ],
-      "done_means": "tests green on Postgres; pool reasoning written down.",
+      "done_means": "tests green; reasoning written.",
       "sort_order": 200,
       "skills": [
         "postgres"
       ]
     },
     {
-      "seed_key": "W9:follow-up",
-      "week": "W9",
-      "title": "Follow-up",
+      "seed_key": "W13:pr-3",
+      "week": "W13",
+      "title": "PR #3",
       "project": "oss",
       "steps": [
-        "PR #1 unmerged? Ping politely; offer to split or shrink it.",
-        "Bookmark issue #2 in the same repo."
+        "— open; **G7 target: 3 merged by end of this week** (8 weeks from start, per the robotics plan). →"
       ],
-      "done_means": "PR moved or ping sent; issue #2 identified.",
+      "done_means": "3 merged or explicit status + next move.",
       "sort_order": 300,
       "skills": [
         "oss"
       ]
     },
     {
-      "seed_key": "W10:explain-index-explain",
-      "week": "W10",
+      "seed_key": "W13:saa-practice-exam-1",
+      "week": "W13",
+      "title": "SAA practice exam #1",
+      "project": "learn",
+      "steps": [
+        "— score logged; 3 weakest domains queued."
+      ],
+      "done_means": null,
+      "sort_order": 400,
+      "skills": [
+        "aws"
+      ]
+    },
+    {
+      "seed_key": "W14:explain-index-explain",
+      "week": "W14",
       "title": "EXPLAIN → index → EXPLAIN",
       "project": "synapse",
       "steps": [
-        "Enable `pg_stat_statements` (available on Neon/RDS); find the slowest hot-path query.",
-        "`EXPLAIN (ANALYZE, BUFFERS)`; save output.",
-        "Add the index it asks for via a goose migration; re-run; save the after."
+        "— pg_stat_statements; slowest hot-path query; `EXPLAIN (ANALYZE, BUFFERS)` before/after a goose-migrated index. →"
       ],
-      "done_means": "before/after plans committed with the timing delta.",
+      "done_means": "both plans + delta committed.",
       "sort_order": 100,
       "skills": [
         "postgres"
       ]
     },
     {
-      "seed_key": "W10:isolation-level-chosen-on-purpose",
-      "week": "W10",
+      "seed_key": "W14:isolation-level-chosen-on-purpose",
+      "week": "W14",
       "title": "Isolation level, chosen on purpose",
       "project": "synapse",
       "steps": [
-        "Read Read Committed vs Repeatable Read vs Serializable against your ingestion path's actual anomalies.",
-        "Set the chosen level explicitly in the ingestion transaction; write a 10-line why in docs.",
-        "Add one test demonstrating the anomaly you're preventing (or knowingly accepting)."
+        "— pick vs the ingestion path's actual anomalies; set explicitly; 10-line why; one test demonstrating the anomaly. →"
       ],
-      "done_means": "explicit level in code + written justification + test.",
+      "done_means": "level + why + test.",
       "sort_order": 200,
       "skills": [
         "postgres"
       ]
     },
     {
-      "seed_key": "W10:the-honest-number",
-      "week": "W10",
+      "seed_key": "W14:the-honest-number",
+      "week": "W14",
       "title": "The honest number",
       "project": "synapse",
       "steps": [
-        "Re-run the W5 load profile with N concurrent writers against Postgres.",
-        "Publish it in the README next to the retired 750, with one sentence of context. Log it (📊)."
+        "— re-run the W9 load profile with N concurrent writers on Postgres; publish next to the retired 750 (📊). →"
       ],
-      "done_means": "new number public, even if it's worse.",
+      "done_means": "public, even if worse.",
       "sort_order": 300,
       "skills": [
         "postgres",
@@ -1148,179 +1371,155 @@
       ]
     },
     {
-      "seed_key": "W10:pgvector-top-k",
-      "week": "W10",
+      "seed_key": "W14:pgvector-top-k",
+      "week": "W14",
       "title": "pgvector top-k",
       "project": "synapse",
       "steps": [
-        "`CREATE EXTENSION vector` via migration; add an embeddings column (dim = your embedding model's).",
-        "Batch-embed existing summaries through the gateway; store.",
-        "Top-k query (`ORDER BY embedding \u003c=\u003e $1 LIMIT k`) behind a Go function + one endpoint.",
-        "Add an HNSW index; measure query latency before/after."
+        "— extension via migration; batch-embed summaries through the gateway; `\u003c=\u003e` top-k endpoint; HNSW index, latency before/after. →"
       ],
-      "done_means": "endpoint returns sane neighbors; latency recorded.",
+      "done_means": "sane neighbors, latency recorded.",
       "sort_order": 400,
       "skills": [
         "retrieval"
       ]
     },
     {
-      "seed_key": "W10:postgres-internals-reading",
-      "week": "W10",
+      "seed_key": "W14:postgres-internals-reading",
+      "week": "W14",
       "title": "Postgres internals reading",
       "project": "learn",
       "steps": [
-        "Read: autovacuum docs, one BRIN/GIN article, partitioning overview.",
-        "Write 5 bullets: which of these synapsePlatform will need, and when."
+        "— autovacuum, BRIN/GIN, partitioning; 5 bullets on what synapse will need. →"
       ],
-      "done_means": "notes in the log.",
+      "done_means": "notes logged.",
       "sort_order": 500,
       "skills": [
         "postgres"
       ]
     },
     {
-      "seed_key": "W11:dataset-curated",
-      "week": "W11",
+      "seed_key": "W15:dataset-curated",
+      "week": "W15",
       "title": "Dataset curated",
       "project": "synapse",
       "steps": [
-        "Export input→accepted-summary pairs from your domains into `ml/data/`; target 500–2,000 examples.",
-        "Dedupe, strip anything sensitive, format to instruct JSONL; split 90/10 train/val.",
-        "Freeze val. Never train on the golden set — that's the test."
+        "— 500–2,000 input→accepted-summary pairs into `ml/data/` (fleet summaries eligible); dedupe, strip sensitive, instruct JSONL, 90/10 split; freeze val; never train on the golden set. →"
       ],
-      "done_means": "`train.jsonl` + `val.jsonl` with counts recorded.",
+      "done_means": "train/val committed with counts.",
       "sort_order": 100,
       "skills": [
         "finetuning"
       ]
     },
     {
-      "seed_key": "W11:lora-fine-tune-quantize",
-      "week": "W11",
+      "seed_key": "W15:lora-fine-tune-quantize",
+      "week": "W15",
       "title": "LoRA fine-tune → quantize",
       "project": "synapse",
       "steps": [
-        "Rent the same GPU class as W4; base model = the one you've been serving.",
-        "LoRA via Axolotl or Unsloth: 1–3 epochs; watch the loss curve, stop when val flattens.",
-        "Merge the adapter; quantize to AWQ (vLLM-friendly; GGUF only if you also want llama.cpp).",
-        "Save artifacts + exact configs to `ml/models/` registry notes."
+        "— same GPU class as W8; base = the served model; Axolotl/Unsloth 1–3 epochs, stop when val flattens; merge; AWQ; configs to `ml/models/`. →"
       ],
-      "done_means": "quantized model + training config saved.",
+      "done_means": "quantized model + config saved.",
       "sort_order": 200,
       "skills": [
         "finetuning"
       ]
     },
     {
-      "seed_key": "W11:serve-tuned-model-eval-vs-base",
-      "week": "W11",
-      "title": "Serve tuned model, eval vs base",
+      "seed_key": "W15:serve-tuned-eval-vs-base",
+      "week": "W15",
+      "title": "Serve tuned, eval vs base",
       "project": "gateway",
       "steps": [
-        "[gateway] `vllm serve` the tuned model; add provider `local-tuned`.",
-        "[synapse] Run the W2 eval runner: base vs tuned on the golden set (rejection, coverage, stability) + cost/latency via the bake-off harness.",
-        "Write the true verdict: \"tuned = X% rejection at Y% of the cost\" — whatever the numbers say."
+        "— provider `local-tuned`; run the W6 eval runner on the golden set + bake-off cost/latency; write the true verdict (📊). →"
       ],
-      "done_means": "eval table committed; verdict logged (📊).",
+      "done_means": "table + verdict, whatever they say.",
       "sort_order": 300,
       "skills": [
         "finetuning",
-        "serving",
-        "evals"
+        "evals",
+        "serving"
       ]
     },
     {
-      "seed_key": "W11:saa-practice-exam-1",
-      "week": "W11",
-      "title": "SAA practice exam #1",
+      "seed_key": "W15:saa-practice-exam-2",
+      "week": "W15",
+      "title": "SAA practice exam #2.",
       "project": "learn",
-      "steps": [
-        "One full timed practice exam Thursday.",
-        "Log the score; list 3 weakest domains; queue those modules."
-      ],
-      "done_means": "score logged.",
+      "steps": [],
+      "done_means": null,
       "sort_order": 400,
       "skills": [
         "aws"
       ]
     },
     {
-      "seed_key": "W12:checkpoint-mon-nov-9-45-min",
-      "week": "W12",
-      "title": "Checkpoint (Mon Nov 9, 45 min)",
+      "seed_key": "W16:checkpoint-45-min-sat-dec-13",
+      "week": "W16",
+      "title": "Checkpoint (45 min, Sat Dec 13)",
       "project": "dash",
       "steps": [
-        "In the dashboard Review, answer in writing: interview-grade eval number? chaos falsified anything? PR merged or stale? fourth repo? still AI-infra path?",
-        "Any bad answer → adjust B1 scope immediately."
+        "— interview-grade eval number? chaos falsified anything? 3 PRs merged or stale? fifth repo started? **robotics-infra vs AI-infra vs PM/founder — which leads Q1 applications?** Any bad answer → adjust B1 now. →"
       ],
-      "done_means": "written answers exist.",
+      "done_means": "written answers.",
       "sort_order": 100,
       "skills": [
         "career"
       ]
     },
     {
-      "seed_key": "W12:terraform-full-stack-infra",
-      "week": "W12",
+      "seed_key": "W16:terraform-full-stack-infra",
+      "week": "W16",
       "title": "Terraform full stack (infra/)",
       "project": "synapse",
       "steps": [
-        "Add a module for one small VM (Hetzner/EC2); cloud-init installs Docker + pulls your compose file (gateway, synapse services, Prometheus, Grafana).",
-        "Wire the W9 PG outputs into the app config.",
-        "`terraform destroy \u0026\u0026 apply` on a scratch env; run a smoke-test script against it.",
-        "`infra/README.md`: the one-command bring-up."
+        "— small VM module (Hetzner/EC2), cloud-init Docker + compose (gateway, synapse, Prometheus, Grafana); W13 PG outputs wired; `destroy \u0026\u0026 apply` + smoke test; one-command bring-up in `infra/README.md`. →"
       ],
-      "done_means": "fresh environment reachable end-to-end from zero.",
+      "done_means": "fresh env end-to-end from zero.",
       "sort_order": 200,
       "skills": [
         "terraform"
       ]
     },
     {
-      "seed_key": "W12:security-pass",
-      "week": "W12",
+      "seed_key": "W16:security-pass",
+      "week": "W16",
       "title": "Security pass",
       "project": "all",
       "steps": [
-        "`gosec ./...` + `govulncheck ./...` on synapse, gateway, dash; fix or explicitly triage every finding.",
-        "Trufflehog scan of git history; rotate anything it finds.",
-        "30-min OWASP top-10 walk of the gateway: authz on every route, input size limits, no error leakage."
+        "— gosec + govulncheck on synapse/gateway/dash, fix or triage; trufflehog history scan, rotate finds; 30-min OWASP walk of the gateway. →"
       ],
-      "done_means": "`docs/security.md` with clean-or-triaged reports.",
+      "done_means": "`docs/security.md` clean-or-triaged.",
       "sort_order": 300,
       "skills": [
         "security"
       ]
     },
     {
-      "seed_key": "W12:polish-conference",
-      "week": "W12",
+      "seed_key": "W16:polish-conference",
+      "week": "W16",
       "title": "Polish + conference",
       "project": "all",
       "steps": [
-        "Each repo README top: what it is → the numbers → one diagram → quickstart.",
-        "Pin the 3 repos; profile README with the 3 headline numbers.",
-        "[career] Book the conference ticket."
+        "— README top per repo: what it is → the numbers → one diagram → quickstart; pin repos; profile README with headline numbers; book conference. →"
       ],
-      "done_means": "a stranger gets the story in 2 minutes per repo; ticket booked.",
+      "done_means": "2-minute story per repo; ticket booked.",
       "sort_order": 400,
       "skills": [
-        "career",
-        "writing"
+        "writing",
+        "career"
       ]
     },
     {
-      "seed_key": "W12:cv-10-applications",
-      "week": "W12",
+      "seed_key": "W16:cv-10-applications",
+      "week": "W16",
       "title": "CV + 10 applications",
       "project": "career",
       "steps": [
-        "Rewrite CV to 1 page: 3 numbers, OSS line, serving + fine-tune line.",
-        "Update LinkedIn headline; feature the 2 posts.",
-        "List 15 target companies (AI infra / LLM infra / Go platform); tailor and send 10; log each (📮)."
+        "— 1 page: fleet repoint, 3 numbers, 3-PR OSS line, serving + fine-tune; LinkedIn featuring posts #1–3; send 10 across robotics-infra (Foxglove, Viam, Northern.tech, Sift ± NEURA/ARX) + AI-infra (Nebius, Langfuse, E2B, Go platform), each logged (📮). →"
       ],
-      "done_means": "10 applications logged in the dashboard.",
+      "done_means": "10 logged.",
       "sort_order": 500,
       "skills": [
         "career"
@@ -1332,7 +1531,7 @@
       "title": "Sit the SAA (G6)",
       "project": "learn",
       "steps": [
-        "1. practice exam #2 → 2. book + sit → 3. log (🎓)."
+        "1. practice exam #3 → 2. book + sit before Dec 20 → 3. log it (🎓)."
       ],
       "done_means": "pass.",
       "sort_order": 100,
@@ -1346,7 +1545,7 @@
       "title": "K8s on kind (G5)",
       "project": "synapse",
       "steps": [
-        "1. `kind create cluster` → 2. Deployments + Services + liveness/readiness probes in `deploy/` → 3. HPA on CPU + load until it scales."
+        "1. `kind create cluster` → 2. Deployments + Services + liveness/readiness probes in `deploy/` → 3. HPA on CPU, load until it scales."
       ],
       "done_means": "you watched a scaling event.",
       "sort_order": 200,
@@ -1355,81 +1554,82 @@
       ]
     },
     {
-      "seed_key": "B1:eval-regression-alerts-g13",
-      "week": "B1",
+      "seed_key": "B2:udemy-llm-course-starts-in-the-freed-thursday-slot-finish-ddia-rest-counts-as-progress-this-block",
+      "week": "B2",
+      "title": "Udemy LLM course starts in the freed Thursday slot; finish DDIA. Rest counts as progress this block",
+      "project": "learn",
+      "steps": [],
+      "done_means": null,
+      "sort_order": 100,
+      "skills": [
+        "serving",
+        "distsys"
+      ]
+    },
+    {
+      "seed_key": "B2:eval-regression-alerts-g13",
+      "week": "B2",
       "title": "Eval regression alerts (G13)",
       "project": "synapse",
       "steps": [
-        "1. pick W\u0026B (free tier) or MLflow → 2. log every eval run (params + metrics) → 3. nightly GitHub Action runs eval, alerts on regression → 4. test the alert once on purpose."
+        "1. pick W\u0026B (free tier) or MLflow → 2. log every eval run (params + metrics) → 3. nightly GitHub Action runs the eval and alerts on regression → 4. test the alert once on purpose."
       ],
       "done_means": "one real alert received.",
-      "sort_order": 300,
+      "sort_order": 200,
       "skills": [
         "evals",
         "observability"
       ]
     },
     {
-      "seed_key": "B1:medium-3",
-      "week": "B1",
-      "title": "Medium #3",
+      "seed_key": "B2:medium-4-g8",
+      "week": "B2",
+      "title": "Medium #4 (G8)",
       "project": "write",
       "steps": [
-        "the W11 table becomes \"fine-tuning vs prompting, measured.\""
+        "\"fine-tuning vs prompting, measured\" — the W15 verdict table becomes the post."
       ],
       "done_means": "live URL (✍️).",
-      "sort_order": 400,
+      "sort_order": 300,
       "skills": [
         "writing"
       ]
     },
     {
-      "seed_key": "B1:udemy-llm-course-starts-in-the-thursday-slot",
-      "week": "B1",
-      "title": "Udemy LLM course starts in the Thursday slot",
-      "project": "learn",
-      "steps": [],
-      "done_means": null,
-      "sort_order": 500,
-      "skills": [
-        "serving"
-      ]
-    },
-    {
-      "seed_key": "B2:dlq-retries",
-      "week": "B2",
-      "title": "DLQ + retries",
+      "seed_key": "B3:dlq-replay-cli",
+      "week": "B3",
+      "title": "DLQ + replay CLI",
       "project": "synapse",
       "steps": [
         "1. create `\u003ctopic\u003e.dlq` → 2. consumer: N retries with backoff, then publish to DLQ with error headers → 3. small CLI to inspect + replay."
       ],
-      "done_means": "a poison message lands in DLQ and replays clean.",
+      "done_means": "a poison message lands in the DLQ and replays clean.",
       "sort_order": 100,
       "skills": [
         "distsys"
       ]
     },
     {
-      "seed_key": "B2:idempotency",
-      "week": "B2",
-      "title": "Idempotency",
+      "seed_key": "B3:idempotency-proof",
+      "week": "B3",
+      "title": "Idempotency proof",
       "project": "synapse",
       "steps": [
         "1. event UUID + unique constraint / processed table → 2. test: duplicate delivery causes exactly one effect."
       ],
-      "done_means": "test proves it.",
+      "done_means": "the test proves it.",
       "sort_order": 200,
       "skills": [
         "distsys"
       ]
     },
     {
-      "seed_key": "B2:backpressure",
-      "week": "B2",
+      "seed_key": "B3:backpressure",
+      "week": "B3",
       "title": "Backpressure",
       "project": "synapse",
       "steps": [
-        "1. bound in-flight work (worker pool; pause/resume consumer on depth) → 2. slow the DB on purpose: lag grows, memory stays flat."
+        "1. bound in-flight work (worker pool; pause/resume the consumer on depth) → 2. slow the DB on purpose: lag grows, memory stays flat."
       ],
       "done_means": "the graph shows exactly that.",
       "sort_order": 300,
@@ -1438,26 +1638,26 @@
       ]
     },
     {
-      "seed_key": "B3:result-caching",
-      "week": "B3",
+      "seed_key": "B4:result-caching",
+      "week": "B4",
       "title": "Result caching",
       "project": "gateway",
       "steps": [
-        "Redis cache keyed by the existing cache key, TTL configurable; hit-rate metric; tune \u003e60% on replayed traffic."
+        "Redis cache keyed by the existing cache key, TTL configurable; hit-rate metric; tune to \u003e60% on replayed traffic."
       ],
-      "done_means": "panel shows \u003e60%.",
+      "done_means": "the panel shows \u003e60%.",
       "sort_order": 100,
       "skills": [
         "serving"
       ]
     },
     {
-      "seed_key": "B3:hardening",
-      "week": "B3",
-      "title": "Hardening",
+      "seed_key": "B4:timeouts-on-every-outbound-call",
+      "week": "B4",
+      "title": "Timeouts on every outbound call",
       "project": "gateway",
       "steps": [
-        "timeouts on every outbound call; retry+jitter where idempotent; cost budget alert."
+        "deadlines everywhere; retry+jitter where idempotent; cost budget alert."
       ],
       "done_means": "grep finds no call without a deadline.",
       "sort_order": 200,
@@ -1466,8 +1666,8 @@
       ]
     },
     {
-      "seed_key": "B3:per-key-quotas",
-      "week": "B3",
+      "seed_key": "B4:per-key-quotas",
+      "week": "B4",
       "title": "Per-key quotas",
       "project": "gateway",
       "steps": [
@@ -1476,20 +1676,8 @@
       "done_means": "k6 proves the cap.",
       "sort_order": 300,
       "skills": [
-        "security"
-      ]
-    },
-    {
-      "seed_key": "B4:udemy-modules-finish-ddia-buffer-rest-counts-as-progress-this-block",
-      "week": "B4",
-      "title": "Udemy modules + finish DDIA + buffer. Rest counts as progress this block",
-      "project": "learn",
-      "steps": [],
-      "done_means": null,
-      "sort_order": 100,
-      "skills": [
-        "serving",
-        "distsys"
+        "security",
+        "chaos"
       ]
     },
     {
@@ -1533,17 +1721,18 @@
       ]
     },
     {
-      "seed_key": "B6:pr-2-g7",
+      "seed_key": "B6:one-more-substantive-mcap-pr-stretch",
       "week": "B6",
-      "title": "PR #2 (G7)",
+      "title": "One more substantive mcap PR (stretch)",
       "project": "oss",
       "steps": [
-        "implement → open → shepherd to merge."
+        "G7's three already merged by W13 — this one is depth, not the target."
       ],
-      "done_means": "merged, because one can be luck.",
+      "done_means": "merged, or dropped on purpose.",
       "sort_order": 100,
       "skills": [
-        "oss"
+        "oss",
+        "mcap"
       ]
     },
     {
@@ -1552,7 +1741,7 @@
       "title": "OAuth/OIDC (G15)",
       "project": "gateway",
       "steps": [
-        "client-credentials flow via a Keycloak container; retire static-key path behind a flag; OWASP recheck."
+        "client-credentials flow via a Keycloak container; retire the static-key path behind a flag; OWASP recheck."
       ],
       "done_means": "token-based auth works end to end.",
       "sort_order": 200,
@@ -1599,9 +1788,9 @@
       ]
     },
     {
-      "seed_key": "B7:checkpoint-feb-21",
+      "seed_key": "B7:checkpoint-mar-21",
       "week": "B7",
-      "title": "Checkpoint Feb 21",
+      "title": "Checkpoint Mar 21",
       "project": "dash",
       "steps": [
         "written review, same 5-question format."
@@ -1615,20 +1804,20 @@
   ],
   "checkpoints": [
     {
-      "week": "W12",
+      "week": "W16",
       "questions": [
         "interview-grade eval number?",
         "chaos falsified anything?",
-        "PR merged or stale?",
-        "fourth repo?",
-        "still AI-infra path?"
+        "3 PRs merged or stale?",
+        "fifth repo started?",
+        "robotics-infra vs AI-infra vs PM/founder — which leads Q1 applications?"
       ],
       "helpers": [
         "Good = the exact sentence you'd say out loud, with real X and Y. Not yet = name the one missing piece.",
         "Name the belief that died. Nothing surprised you = you tested too gently — schedule the harder rerun before answering.",
-        "Status + date of last maintainer contact + your next move.",
-        "Yes/no. If yes: which one gets archived this week.",
-        "Gut check, one paragraph max. Re-decide, don't re-litigate."
+        "Status + date of last maintainer contact + your next move, per PR.",
+        "Yes/no. If yes: which one gets archived this week. mcap-tools was the sanctioned exception and is frozen.",
+        "Re-decide, don't re-litigate. One paragraph, then it drives B1."
       ]
     },
     {
@@ -1636,27 +1825,51 @@
       "questions": [
         "interview-grade eval number?",
         "chaos falsified anything?",
-        "PR merged or stale?",
-        "fourth repo?",
-        "still AI-infra path?"
+        "3 PRs merged or stale?",
+        "fifth repo started?",
+        "robotics-infra vs AI-infra vs PM/founder — which leads Q1 applications?"
       ],
       "helpers": [
         "Good = the exact sentence you'd say out loud, with real X and Y. Not yet = name the one missing piece.",
         "Name the belief that died. Nothing surprised you = you tested too gently — schedule the harder rerun before answering.",
-        "Status + date of last maintainer contact + your next move.",
-        "Yes/no. If yes: which one gets archived this week.",
-        "Gut check, one paragraph max. Re-decide, don't re-litigate."
+        "Status + date of last maintainer contact + your next move, per PR.",
+        "Yes/no. If yes: which one gets archived this week. mcap-tools was the sanctioned exception and is frozen.",
+        "Re-decide, don't re-litigate. One paragraph, then it drives B1."
       ]
     }
   ],
   "skills": [
+    {
+      "code": "ros2",
+      "name": "ROS 2 literacy",
+      "description": "Nodes, topics, message types, services, actions, bags, TF — reading robot data, not writing robot code.",
+      "associate_when": "the task reads, explains, or maps ROS 2 concepts or bag contents.",
+      "target_tier": "Practitioner",
+      "sort_order": 10
+    },
+    {
+      "code": "mcap",
+      "name": "MCAP",
+      "description": "The container format: Schema/Channel/Message records, reader and writer paths, mcap info/cat/doctor, CDR decoding.",
+      "associate_when": "the task reads, writes, or validates MCAP.",
+      "target_tier": "Expert",
+      "sort_order": 20
+    },
+    {
+      "code": "mqtt",
+      "name": "MQTT",
+      "description": "QoS levels, persistent sessions, retained messages, Last Will and Testament as an offline detector, Paho's Store.",
+      "associate_when": "the task publishes or consumes over MQTT.",
+      "target_tier": "Practitioner",
+      "sort_order": 30
+    },
     {
       "code": "evals",
       "name": "Evaluation systems",
       "description": "Measuring LLM output quality: golden sets, rejection/coverage/stability metrics, regression gates.",
       "associate_when": "the task creates, runs, or gates on an evaluation.",
       "target_tier": "Expert",
-      "sort_order": 10
+      "sort_order": 40
     },
     {
       "code": "go-perf",
@@ -1664,7 +1877,7 @@
       "description": "pprof, allocation discipline, benchmarks, hot-path fixes.",
       "associate_when": "the task profiles, optimises, or benchmarks Go code.",
       "target_tier": "Expert",
-      "sort_order": 20
+      "sort_order": 50
     },
     {
       "code": "chaos",
@@ -1672,7 +1885,7 @@
       "description": "k6/vegeta, dependency-kill experiments, proving failure modes.",
       "associate_when": "the task generates load, or breaks something on purpose to observe behaviour.",
       "target_tier": "Expert",
-      "sort_order": 30
+      "sort_order": 60
     },
     {
       "code": "observability",
@@ -1680,7 +1893,7 @@
       "description": "Prometheus, Grafana, OTel traces, dashboards, alerting.",
       "associate_when": "the task adds or reads metrics, traces, or dashboards.",
       "target_tier": "Expert",
-      "sort_order": 40
+      "sort_order": 70
     },
     {
       "code": "serving",
@@ -1688,7 +1901,7 @@
       "description": "vLLM, batching, token streaming, TTFT, provider wiring, bake-offs.",
       "associate_when": "the task runs, routes to, or measures a model server.",
       "target_tier": "Expert",
-      "sort_order": 50
+      "sort_order": 80
     },
     {
       "code": "finetuning",
@@ -1696,7 +1909,7 @@
       "description": "Dataset curation, LoRA, AWQ/GGUF, tuned-vs-base verdicts.",
       "associate_when": "the task prepares data for, trains, or compresses a model.",
       "target_tier": "Practitioner",
-      "sort_order": 60
+      "sort_order": 90
     },
     {
       "code": "postgres",
@@ -1704,7 +1917,7 @@
       "description": "pgxpool, isolation levels, EXPLAIN, indexes, migrations, vacuum.",
       "associate_when": "the task touches the relational layer below the ORM line.",
       "target_tier": "Expert",
-      "sort_order": 70
+      "sort_order": 100
     },
     {
       "code": "retrieval",
@@ -1712,7 +1925,7 @@
       "description": "Embeddings, top-k search, HNSW, retrieval latency.",
       "associate_when": "the task stores or queries vectors.",
       "target_tier": "Practitioner",
-      "sort_order": 80
+      "sort_order": 110
     },
     {
       "code": "distsys",
@@ -1720,7 +1933,7 @@
       "description": "DDIA theory, and Kafka in practice: DLQ, retries, backpressure, idempotency, consistency.",
       "associate_when": "the task deals with partial failure between processes.",
       "target_tier": null,
-      "sort_order": 90
+      "sort_order": 120
     },
     {
       "code": "terraform",
@@ -1728,7 +1941,7 @@
       "description": "Terraform modules, reproducible environments, destroy/apply proofs.",
       "associate_when": "the task provisions anything by code instead of by clicking.",
       "target_tier": "Practitioner",
-      "sort_order": 100
+      "sort_order": 130
     },
     {
       "code": "k8s",
@@ -1736,7 +1949,7 @@
       "description": "kind, Deployments, probes, HPA, manifests.",
       "associate_when": "the task runs workloads on a cluster.",
       "target_tier": "Practitioner",
-      "sort_order": 110
+      "sort_order": 140
     },
     {
       "code": "aws",
@@ -1744,7 +1957,7 @@
       "description": "SAA preparation and exam, service architecture, IAM.",
       "associate_when": "the task studies or applies AWS specifics.",
       "target_tier": "Expert",
-      "sort_order": 120
+      "sort_order": 150
     },
     {
       "code": "security",
@@ -1752,15 +1965,15 @@
       "description": "gosec/govulncheck, secrets hygiene, OWASP, OAuth/OIDC.",
       "associate_when": "the task finds, fixes, or prevents a vulnerability class.",
       "target_tier": "Practitioner",
-      "sort_order": 130
+      "sort_order": 160
     },
     {
       "code": "oss",
       "name": "Open-source collaboration",
       "description": "Working in codebases you don't own: repros, PRs, review etiquette, maintainer time.",
-      "associate_when": "the task touches the chosen external repo.",
+      "associate_when": "the task touches foxglove/mcap.",
       "target_tier": null,
-      "sort_order": 140
+      "sort_order": 170
     },
     {
       "code": "writing",
@@ -1768,7 +1981,7 @@
       "description": "Medium posts, RELIABILITY.md-grade docs, case studies.",
       "associate_when": "the task produces prose a stranger will read.",
       "target_tier": null,
-      "sort_order": 150
+      "sort_order": 180
     },
     {
       "code": "career",
@@ -1776,7 +1989,7 @@
       "description": "CV, LinkedIn, applications, interviews, networking, checkpoints.",
       "associate_when": "the task advances the job search rather than the codebase.",
       "target_tier": null,
-      "sort_order": 160
+      "sort_order": 190
     },
     {
       "code": "tooling",
@@ -1784,7 +1997,7 @@
       "description": "Building tools that make the rest of the work faster — this dashboard included.",
       "associate_when": "the task improves your own workflow with software.",
       "target_tier": null,
-      "sort_order": 170
+      "sort_order": 200
     }
   ]
 }

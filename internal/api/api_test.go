@@ -168,7 +168,7 @@ func TestAPIEndpoints(t *testing.T) {
 	assertStatus(t, metric, http.StatusCreated)
 	assertStatus(t, srv.request(http.MethodGet, "/api/metrics?name=p95+latency+%28cached%29", nil), http.StatusOK)
 
-	checkpoint := srv.request(http.MethodGet, "/api/checkpoints/W12", nil)
+	checkpoint := srv.request(http.MethodGet, "/api/checkpoints/W16", nil)
 	assertStatus(t, checkpoint, http.StatusOK)
 	var cp store.Checkpoint
 	decodeBody(t, checkpoint, &cp)
@@ -179,7 +179,7 @@ func TestAPIEndpoints(t *testing.T) {
 	for i := range answers {
 		answers[i] = "answer"
 	}
-	assertStatus(t, srv.request(http.MethodPut, "/api/checkpoints/W12", map[string]any{
+	assertStatus(t, srv.request(http.MethodPut, "/api/checkpoints/W16", map[string]any{
 		"answers": answers,
 	}), http.StatusOK)
 

@@ -122,7 +122,12 @@ func NewMux(cfg Config) http.Handler {
 	return s.recover(s.requestLog(s.tokenAuth(mux)))
 }
 
-func (s *Server) health(w http.ResponseWriter, _ *http.Request) {
+func (s *Server) health(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	s.writeJSON(w, http.StatusOK, HealthResponse{Status: "ok", Version: s.version})
 }
 

@@ -44,6 +44,11 @@ func (s *Server) listSkills(w http.ResponseWriter, r *http.Request) {
 
 // GET /api/skills/{id} - one skill, the tasks that build it, and the evidence citing it.
 func (s *Server) getSkill(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	id, err := pathID(r)
 	if err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())

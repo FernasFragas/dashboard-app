@@ -601,23 +601,23 @@ func TestParseRealMasterPlan(t *testing.T) {
 		t.Fatalf("parse master-plan-v5.md: %v", err)
 	}
 
-	if len(doc.Goals) != 18 {
-		t.Errorf("goals = %d, want 18 (G0..G17)", len(doc.Goals))
+	if len(doc.Goals) != 22 {
+		t.Errorf("goals = %d, want 22 (G0..G21)", len(doc.Goals))
 	}
-	if len(doc.Weeks) != 19 {
-		t.Errorf("weeks = %d, want 19 (W1..W12 + B1..B7)", len(doc.Weeks))
+	if len(doc.Weeks) != 23 {
+		t.Errorf("weeks = %d, want 23 (W1..W16 + B1..B7)", len(doc.Weeks))
 	}
-	if len(doc.Projects) != 8 {
-		t.Errorf("projects = %d, want 8", len(doc.Projects))
+	if len(doc.Projects) != 9 {
+		t.Errorf("projects = %d, want 9", len(doc.Projects))
 	}
 	if len(doc.Categories) != 8 {
 		t.Errorf("categories = %d, want 8", len(doc.Categories))
 	}
-	if len(doc.Skills) != 17 {
-		t.Errorf("skills = %d, want 17", len(doc.Skills))
+	if len(doc.Skills) != 20 {
+		t.Errorf("skills = %d, want 20", len(doc.Skills))
 	}
 	if len(doc.Checkpoints) != 2 {
-		t.Errorf("checkpoints = %d, want 2", len(doc.Checkpoints))
+		t.Errorf("checkpoints = %d, want 2 (W16, B7)", len(doc.Checkpoints))
 	}
 
 	for _, c := range doc.Checkpoints {

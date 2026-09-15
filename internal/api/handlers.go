@@ -304,6 +304,11 @@ func (s *Server) createGoal(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getGoal(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	id, err := pathID(r)
 	if err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
@@ -533,6 +538,11 @@ func (s *Server) createTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getTask(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	id, err := pathID(r)
 	if err != nil {
 		s.writeError(w, http.StatusBadRequest, err.Error())
@@ -837,6 +847,11 @@ func (s *Server) logSummary(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) categories(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	categories, err := s.store.ListCategories(r.Context())
 	if err != nil {
 		s.handleStoreError(w, err)
@@ -850,6 +865,11 @@ func (s *Server) categories(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) projects(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	projects, err := s.store.ListProjects(r.Context())
 	if err != nil {
 		s.handleStoreError(w, err)
@@ -1044,6 +1064,11 @@ func (s *Server) createMetric(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) metricDefs(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	defs, err := s.store.ListMetricDefs(r.Context())
 	if err != nil {
 		s.handleStoreError(w, err)
@@ -1057,6 +1082,11 @@ func (s *Server) metricDefs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getCheckpoint(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	week := r.PathValue("week")
 	checkpoint, err := s.store.GetCheckpoint(r.Context(), week)
 	if err != nil {
@@ -1104,6 +1134,11 @@ func (s *Server) putCheckpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) export(w http.ResponseWriter, r *http.Request) {
+	if err := requireKnownQuery(r); err != nil {
+		s.writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	data, err := s.store.Export(r.Context())
 	if err != nil {
 		s.handleStoreError(w, err)

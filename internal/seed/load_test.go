@@ -55,19 +55,19 @@ func TestLoadParsesEmbeddedDocument(t *testing.T) {
 		t.Errorf("generated_from = %q, want master-plan-v5.md", doc.GeneratedFrom)
 	}
 
-	// The counts the plan actually contains: G0..G17, twelve weeks plus seven blocks, the
+	// The counts the plan actually contains: G0..G21, sixteen weeks plus seven blocks, the
 	// eight quick-log buttons, and the two checkpoints.
-	if len(doc.Goals) != 18 {
-		t.Errorf("goals = %d, want 18 (G0..G17)", len(doc.Goals))
+	if len(doc.Goals) != 22 {
+		t.Errorf("goals = %d, want 22 (G0..G21)", len(doc.Goals))
 	}
-	if len(doc.Weeks) != 19 {
-		t.Errorf("weeks = %d, want 19 (W1..W12 + B1..B7)", len(doc.Weeks))
+	if len(doc.Weeks) != 23 {
+		t.Errorf("weeks = %d, want 23 (W1..W16 + B1..B7)", len(doc.Weeks))
 	}
 	if len(doc.Categories) != 8 {
 		t.Errorf("categories = %d, want 8", len(doc.Categories))
 	}
 	if len(doc.Checkpoints) != 2 {
-		t.Errorf("checkpoints = %d, want 2 (W12, B7)", len(doc.Checkpoints))
+		t.Errorf("checkpoints = %d, want 2 (W16, B7)", len(doc.Checkpoints))
 	}
 	if len(doc.Tasks) == 0 {
 		t.Error("tasks = 0, want the plan's checklist")
@@ -78,8 +78,8 @@ func TestLoadParsesEmbeddedDocument(t *testing.T) {
 	if len(doc.MetricDefs) == 0 {
 		t.Error("metric_defs = 0, want the metrics targets table")
 	}
-	if len(doc.MetricDefs) != 11 {
-		t.Errorf("metric_defs = %d, want 11 including TTFT", len(doc.MetricDefs))
+	if len(doc.MetricDefs) != 12 {
+		t.Errorf("metric_defs = %d, want 12 including TTFT", len(doc.MetricDefs))
 	}
 	for _, m := range doc.MetricDefs {
 		if m.Slug == nil || m.Unit == nil || m.Definition == nil || m.HowToMeasure == nil {
@@ -111,8 +111,8 @@ func TestApplySeedsEverything(t *testing.T) {
 	if res.Goals != len(doc.Goals) {
 		t.Errorf("inserted goals = %d, want %d", res.Goals, len(doc.Goals))
 	}
-	if got := count(t, db, "goals"); got != 18 {
-		t.Errorf("goals rows = %d, want 18", got)
+	if got := count(t, db, "goals"); got != 22 {
+		t.Errorf("goals rows = %d, want 22", got)
 	}
 	if got := count(t, db, "tasks"); got != len(doc.Tasks) {
 		t.Errorf("tasks rows = %d, want %d", got, len(doc.Tasks))
@@ -138,8 +138,8 @@ func TestApplySeedsEverything(t *testing.T) {
 	).Scan(&backlog); err != nil {
 		t.Fatalf("count backlog goals: %v", err)
 	}
-	if backlog != 18 {
-		t.Errorf("seeded backlog goals = %d, want 18", backlog)
+	if backlog != 22 {
+		t.Errorf("seeded backlog goals = %d, want 22", backlog)
 	}
 
 	// Every seeded task carries its steps and a stable seed_key.
