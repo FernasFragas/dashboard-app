@@ -15,15 +15,12 @@ Install these first:
 - Go 1.26.x
 - Node 24.x, pinned in `.nvmrc`
 - pnpm 11.x
-- golangci-lint 2.x, only needed for `make check`
+- golangci-lint 2.x, only needed for `make check` and `make verify`
 
-Check the installed versions:
+Check the installed versions against what the repo pins:
 
 ```sh
-go version
-node --version
-pnpm --version
-golangci-lint version
+make doctor
 ```
 
 If you use `nvm`, run this from the repo root before installing frontend dependencies:
@@ -135,14 +132,21 @@ VITE_DASHBOARD_TOKEN="dev-secret" pnpm dev
 
 ## Run Checks
 
-Run the full project check from the repo root:
+Check that everything works from the repo root:
 
 ```sh
-make check
+make verify
 ```
 
-This runs formatting, Go vet, golangci-lint, frontend linting, TypeScript checking, Go tests, and
-Vitest.
+This runs every check and prints a pass/fail summary: toolchain versions, formatting,
+`go mod tidy`, Go vet, golangci-lint, frontend linting, TypeScript checking, Go tests with the
+race detector, Vitest, the master plan parsing, the committed seed matching the plan, the
+production build, the embedded-frontend tests, and a smoke test that boots the built binary on a
+throwaway database and checks its responses. It keeps going past failures so one run shows
+everything that is broken.
+
+For a faster loop while editing, `make check` formats code and then runs vet, lint, typecheck
+and tests. `make help` lists every target.
 
 For frontend-only checks:
 

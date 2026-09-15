@@ -149,11 +149,17 @@ curl -fsS http://100.x.y.z:8484/api/export > dashboard-export.json
 ## Checks
 
 ```sh
-make check
+make verify
 ```
 
-`make check` runs Go formatting, vet, golangci-lint, frontend linting, TypeScript checking,
-Vitest, and Go tests.
+`make verify` answers "is everything working?". It checks the toolchain, then runs formatting,
+`go mod tidy`, vet, golangci-lint, eslint, TypeScript, Go tests with the race detector and
+Vitest. It checks the master plan parses and the committed seed matches it, builds the binary,
+runs the embedded-frontend tests, and boots the binary to check its responses. It keeps going
+past a failure and ends with a pass/fail summary.
+
+`make check` is the faster loop: it formats code, then runs vet, lint, typecheck and tests.
+`make help` lists every target.
 
 ## API Curl Checklist
 
